@@ -11,7 +11,7 @@
   - [需要新增一個章節說明 jumplist](#需要新增一個章節說明-jumplist)
   - [Jumps (jump-motions)](#jumps-jump-motions)
 - [搜尋](#搜尋)
-- [編輯](#編輯)
+- [編輯 edit](#編輯-edit)
 - [Vim’s Registers](#vims-registers)
   - [Vim clipboard](#vim-clipboard)
 - [insert mode](#insert-mode)
@@ -23,9 +23,11 @@
 - [Visual Mode](#visual-mode)
 - [File navigating](#file-navigating)
 - [待分類](#待分類)
+- [看不懂的](#看不懂的)
 - [Setting](#setting)
 - [shortcuts](#shortcuts)
 - [window split](#window-split)
+    - [Normal mode](#normal-mode)
 - [Vim Configuration](#vim-configuration)
   - [如何得知目前的設定](#如何得知目前的設定)
 - [VScode Vim Keymap特殊用法](#vscode-vim-keymap特殊用法)
@@ -36,6 +38,7 @@
   - [NERDTree](#nerdtree)
   - [file fuzzy search plugin](#file-fuzzy-search-plugin)
   - [vim-peekaboo](#vim-peekaboo)
+- [License](#license)
 # 游標移動
 [回到最上層](#Top-Content) <br>
     gg = 移到整份文件的最上方
@@ -107,7 +110,7 @@ Type <C-]> to follow a link (you can differentiate links from regular text becau
 
 
 
-# 編輯
+# 編輯 edit
 
     u = undo，回到上一步
     U 整行恢復
@@ -126,12 +129,14 @@ Type <C-]> to follow a link (you can differentiate links from regular text becau
 `gp` same as p but puts the cursor after the pasted selection
 `gP` same as P and puts the cursor after the pasted selection
 yy5p 複製整行且貼上五次
+{number}u undo 幾次
+{number}^r redo 幾次
 
-Now you can save the file and if you have an autoformatter setup it’ll fix your indentation or you can type == to manually format that line. `==`個人目前還沒有辦法正確的使用
+d15G砍掉第幾行
 
 swap two characters? Type dlp (or xp).
 wap couple of lines? Type ddp. 
-ant to swap a couple of paragraphs? Type dapp.
+ant to swap a couple of paragraphs? Type dapp. 可以將兩段落互換
 
 # Vim’s Registers 
 When we use commands like y, d, c and p we’re interacting with Vim’s unnamed register.
@@ -146,6 +151,7 @@ and the black hole register (_).
 "0暫存器不會受到 c,d的影響
 經觀察，剪下暫存器為 "-
 
+:reg a b c d 只列出這些暫存器
 
 1.    /^#.*<ENTER> to jump to the next header
 2.    "ayy to copy the header into the a register
@@ -157,12 +163,15 @@ markdown 神奇編輯法，
 setp1 跳到標題，setp2將該標題複製，setp3去下一個標題，setp4將這行標題複製到暫存器，setp5同4，step6將所有標題都可以貼上了
 
 <C-R> {register} 在inseter mode下可以將對應暫存器的內容貼上。
+
 ## Vim clipboard
 目的：讓你的系統剪貼簿與Vim共用
 
 檢查：
 how to check your clipboard ?
 ```$vim --version``` <br>
+or <br>
+```:vim has('clipboard')``` return 1 有該模組，return 0 無該模組。
 確認是否有 `+clipboard` 預設通常是沒有的，如果你是Ubuntu & Debian，你需要安裝`vim-gtk3` (已驗證)
 如果你是linux，那麼你會有兩種暫存器 `"*`與`"+`，如果是Windows、Mac OS，那麼你的`"*`、`"+` 是相同的。
 一種是PRIMARY，當你選取字串後，可以直接使用滑鼠中鍵單擊貼上。
@@ -173,6 +182,8 @@ how to check your clipboard ?
 設定方式：
 `set clipboard=unnamed` 設定PRIMARY剪貼簿
 `set clipboard=unnamedplus` 設定PRIMARY剪貼簿與我們熟悉的剪貼簿
+這裡要注意的是，用此設定後，你所dd, yy的值，會覆蓋到 "+,"*, "-or"0暫存器，感覺有點奇怪，照理來說你dd的並不會影響到系統的暫存器，需要花時間研究。可能要上網求問
+https://www.brianstorti.com/vim-registers/
 
 貼上只需要使用對應暫存器即可
 `"*` : "*p
@@ -204,6 +215,7 @@ delete to end of file
 like dG
 
 d/hello deletes everything until the first occurrence of hello
+c/hello deletes everything until the first occurrence of hello and change to insert mode
 ggdG deletes a complete document
 
     c change. This is the most useful operator. It deletes and sends you into insert mode so that you can type
@@ -256,15 +268,22 @@ backup off writebackup on:backup current file, deleted afterwards (default)
 `:h` 後 
 輸入你想知道的指令，如果不確定，可以使用Tab或Ctrl-D 來補齊或者顯示清單。
 `:h help-summary` or `:h helphelp`
+
 顯示help-summary, helphelp
-`:h {nameOfPlugin}`
-顯示套件教學
-`:h map-modes`
-顯示各種模式map 範圍
-`:help keycodes`
-顯示相等鍵
 
+`:h {nameOfPlugin}` 顯示套件教學
 
+`:h map-modes` 顯示各種模式map 範圍
+
+`:help keycodes` 顯示相等鍵
+
+`:h quoteplus` 查看primay 暫存器相關介紹
+
+`:h quotestar` 查看system clipboard 暫存器相關介紹
+
+`:h 'clipboard'` 查看clipboard相關介紹(與clipboard不同)
+
+`:h 'registers'` 查看registers
 
 ## Vim document
 "dl"    delete character (alias: "x")           dl      <br>
@@ -355,8 +374,13 @@ zz 让光标所在的行居屏幕中央
 zt 让光标所在的行居屏幕最上一行 t=top
 zb 让光标所在的行居屏幕最下一行 b=bottom
 
+# 看不懂的
+來源：https://vi.stackexchange.com/questions/84/how-can-i-copy-text-to-the-system-clipboard-from-vim
+    :let @+=42
+    :let @*=42
 
-set clipboard=unnamed " use system clipboard //需要在研究怎麼使用
+來源：https://www.barbarianmeetscoding.com/blog/5-minutes-vim-copy-pasting-and-registers
+Now you can save the file and if you have an autoformatter setup it’ll fix your indentation or you can type == to manually format that line. `==`個人目前還沒有辦法正確的使用
 
 # Setting
 Setting the search to be case insensitive in Vim
@@ -387,6 +411,27 @@ nnoremap <C-H> <C-W><C-H>
 tabnew {file}
 :tabn 
 :tabp
+### Normal mode
+Next tab: gt
+Prior tab: gT
+Numbered tab: {number}gt 切換到對應索引的tab。(index從1開始)
+https://vim.fandom.com/wiki/Using_tab_pages
+
+:[count]tabe[dit]                               :tabe :tabedit :tabnew
+:[count]tabnew
+                Open a new tab page with an empty window, after the current
+                tab page.  If [count] is given the new tab page appears after
+                the tab page [count] otherwise the new tab page will appear
+                after the current one.
+                    :tabnew     " opens tabpage after the current one
+                    :.tabnew    " as above
+                    :+tabnew    " opens tabpage after the next tab page
+                                " note: it is one further than :tabnew
+                    :-tabnew    " opens tabpage before the current one
+                    :0tabnew    " opens tabpage before the first one
+                    :$tabnew    " opens tabpage after the last one
+tabmove {+-number} 移動tab到相對索引值
+tabnoly 只留下此tab。
 
 
  Resizing splits
@@ -488,6 +533,6 @@ http://www.study-area.org/tips/vim/Vim-7.html
 https://silverwind1982.pixnet.net/blog/post/346179083
 https://www.barbarianmeetscoding.com/blog/boost-your-coding-fu-with-vscode-and-vim
 
-## License
-
+License
+===
 AwesomeVimTip is released under the [MIT license](LICENSE.txt)
