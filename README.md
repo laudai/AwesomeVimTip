@@ -3,20 +3,31 @@
 此文件的目的是紀錄各種常見、好用的Vim功能，並非是給尚未接觸過得讀者使用。
 如果需要學習Vim基礎操作，可以先使用`$vimtutor`進行學習。
 
+範例使用例句:
+```
+The quick brown fox jumps over the lazy dog.
+```
 若有機會再整理成Gitbook。
 
 # Top Content
 - [Top Content](#top-content)
-- [ex command mode](#ex-command-mode)
-- [游標移動](#游標移動)
+- [Command-line-mode](#command-line-mode)
+    - [符號意思](#符號意思)
+  - [Ex-command mode](#ex-command-mode)
+- [移動](#移動)
+  - [畫面移動](#畫面移動)
+  - [游標移動](#游標移動)
+    - [Jumps (jump-motions)](#jumps-jump-motions)
+    - [Jumps ex command](#jumps-ex-command)
+    - [以g開頭的 motion 移動](#以g開頭的-motion-移動)
+  - [Marks (mark-motions)](#marks-mark-motions)
   - [需要新增一個章節說明 jumplist](#需要新增一個章節說明-jumplist)
-  - [Jumps (jump-motions)](#jumps-jump-motions)
 - [changelist](#changelist)
-- [搜尋](#搜尋)
 - [編輯 edit](#編輯-edit)
+- [搜尋](#搜尋)
 - [Vim’s Registers](#vims-registers)
   - [Vim clipboard](#vim-clipboard)
-- [insert mode](#insert-mode)
+- [Insert mode](#insert-mode)
   - [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
 - [line-wise](#line-wise)
 - [Text-objects](#text-objects)
@@ -38,11 +49,11 @@
 - [Vim password protext files.](#vim-password-protext-files)
 - [Vim Configuration](#vim-configuration)
   - [如何得知目前的設定](#如何得知目前的設定)
+- [colorschemes](#colorschemes)
 - [Vim 寫得不錯的網站 article website](#vim-寫得不錯的網站-article-website)
 - [VScode Vim Keymap特殊用法](#vscode-vim-keymap特殊用法)
   - [vscode Multi-Cursor Mode](#vscode-multi-cursor-mode)
   - [vscode plugin](#vscode-plugin)
-    - [vim-surround](#vim-surround)
 - [Vim Plugin](#vim-plugin)
   - [vimawesome](#vimawesome)
   - [jedi-vim](#jedi-vim)
@@ -80,47 +91,135 @@
   - [ctag](#ctag)
 - [License](#license)
 
-# ex command mode
+# Command-line-mode
 [回到最上層](#Top-Content)
 
+`:h Cmdline Command-line mode-cmdline :`
+> Command-line mode is used to enter Ex commands ":", search patterns "/" and "?", and filter commands "!".
 
+**以下兩種寫法都可以**
+`:2,4 d c` or `:2,4d c`
 
-:10,12d a
-將第10到12行剪下，放到暫存器a
-你可以寫
-:2,4 d c
-or
-:2,4d c
-
-% 代表整個文件
-:%d 刪除整個文件
-0 代表初始行
-$代表最末行
-:5 -2d 代表動到第五行，再向上移動兩行，將該行刪除
-:5,-2d 代表移動到第五行，將此行往上再刪除兩行
-:.,3 d 代表當前行道地行之間的資料都刪除 (可以正向選取或反向選取)
-個人認為 :.,+2 +{motion} :.,5 +{motion} 這種方式比較好理解
-
-你在visual mode下，可以使用 : 來使用ex commands 來幫助你
-
-
-
-# 游標移動
+### 符號意思
 [回到最上層](#Top-Content)
 
-    gg = 移到整份文件的最上方
-    G = 移到整份文件的最下方
-    H = 移到目前螢幕的最上方
-    M = 移到目前螢幕的中間
-    L = 移到目前螢幕的最下方
-    10Enter = 游標往下移動10行，前面的數字表示行數
-    :10Enter = 游標直接移動到第10行
-    10G一樣是移動，但會把此動作加入jumplist內
-    {、} = 把游標移動到上一個、下一個段落(paragraph)
+`%` 代表整個文件
+`:%d` 刪除整個文件
+`0` 代表初始行
+`$`代表最末行
+`:10,12d a` 將第10到12行剪下，放到暫存器a
+`:5 -2d` 代表動到第五行，再向上移動兩行，將該行刪除
+`:5,-2d` 代表移動到第五行，將此行往上再刪除兩行
+`:.,3 d` 代表當前行道地行之間的資料都刪除 (可以正向選取或反向選取)
+個人認為 `:.,+2 +{motion}` `:.,5 +{motion}` 這種方式比較好理解
+## Ex-command mode
+[回到最上層](#Top-Content)
 
-Moving Faster With Counts
-{count}motion , numbeer + jhlkew and so on.
-10gg == 10G
+可以使用 `Q` 或者 `gQ` 的方式進入 `Ex-command mode`
+詳細差異請看 `:h Q`
+
+離開Ex-command mode
+`:vi` or `:visua`
+
+如果使用`:i`進入連續 <ins> insert </ins> 的 ex mode，可以在新行數中輸入`.<CR>`或按下 `<C-c>` 離開
+# 移動
+[回到最上層](#Top-Content)
+
+`:h scroll.txt`
+## 畫面移動
+[回到最上層](#Top-Content)
+
+`H` 移到目前螢幕的最上方
+`M` 移到目前螢幕的中間
+`L` 移到目前螢幕的最下方
+
+**Scrolling relative to cursor** _scroll-cursor_
+`zt` 將該前行放在螢幕最上方
+`zz` 將該前行放在螢幕中間
+`zb` 將該前行放在螢幕最下方
+
+**Scrolling downwards/upwards** _scroll-down / scroll-up_
+`ctrl-f` / `ctrl-b` 向下/向上翻一頁(forward, backward)
+`ctrl-d` / `ctrl-u` 向下/向上翻半頁(down, up)
+`ctrl-e` / `ctrl-y` 向下/向上移動一行
+
+
+## 游標移動
+[回到最上層](#Top-Content)
+
+`[ count ]zz` 移動到該行，並且將該行放在視窗中間
+`[ count ]|` 移到對應的欄位
+
+`:h motion`
+`[ count ]{ motion }` , numbeer + jhlkew and so on.
+`[ count ]<CR>` 向下移動到N行，不會在jumplist中留下紀錄。
+e.g. 10Enter
+`:[ count ]` 移動到N行，不會在jumplist中留下紀錄。
+e.g. :10\<CR>
+
+### Jumps (jump-motions)
+[回到最上層](#Top-Content)
+
+`:h jump-motions`
+jump command 是可以讓你快速的在文件中移動的方式。
+如果標記的內容沒有消失或移除，你可以快速回到上一次 "jump" 的位置。
+```
+`` 或者 '' 兩種方式都可以讓你在上次jump與現在位置做交換。
+※ 注意與 `" '"這兩種與 `` '' 不同。
+```
+
+
+下面列出命令都是 jump 命令：
+```
+"'", "`", "G", "/", "?", "n", "N", "%", "(", ")", "[[", "]]", "{", "}", ":s", ":tag", "H", "M", "L"
+```
+
+`gg` 移到整份文件的最上方
+`G` 移到整份文件的最下方
+`10G`一樣是移動，但會把此動作加入jumplist內 // 10gg == 10G
+`%` 在括號內移動
+`(` `)` 把游標移動到上一個、下一個句子(sentence)
+`{` `}` 把游標移動到上一個、下一個段落(paragraph)
+`[[` 把游標移到上一個第一欄為 **{** 開頭的句子，若無則移動到文件首行
+`]]` 把游標移到下一個第一欄為 **{** 開頭的句子，若無則移動到文件末行
+`[]` 把游標移到上一個第一欄為 **}** 開頭的句子，若無則移動到文件首行
+`][` 把游標移到下一個第一欄為 **}** 開頭的句子，若無則移動到文件末行
+
+`[ count ] ctrl-o` 回到舊的 jump 設定的地方（不是 motion 命令）
+`[ count ] ctrl-i` 回到新的 jump 設定的地方（不是 motion 命令）
+```
+CTRL-O Go to [count] Older cursor position in jump list (not a motion command).
+CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
+```
+`^]` 同 `C-]`jump to tag under cursor，會跑到下一個有tag的地方
+### Jumps ex command
+`:ju[mps]` Print the jump list.
+`cle[arjumps]` Clear the jump list of the current window.
+
+最初提到的地方是 `:h help.txt`，詳情請看`:h tags`
+
+### 以g開頭的 motion 移動
+`[ count ]g;` 回到舊的有更改的地方
+`[ count ]g,` 回到新的有更改的地方
+`gi` 回到上次使用 insert mode 的地方
+`[ count ]gI` 回到上次使用 insert mode 的該行 column 1 位置
+
+## Marks (mark-motions)
+
+**\`** or **\'** 都可以作為 jumps to mark 的前導
+
+兩者差異在於 **\`** 可以到原本指定的位置，而且是獨占的exclusive( 不懂其意思 )； **\'** 則是跳到指定位置，但是是 **linewise**。
+
+g\`{mark} g'{mark} 可以前往但不改變jumplist，更多資訊可以看
+`:h keepjumps`
+
+`` or '' 可以回到上一個 jump 的地方
+@@@ 從這裡繼續整理
+
+[source](https://www.barbarianmeetscoding.com/blog/exploring-vim-plugins-a-methodology-to-become-1-percent-better-every-week#configuring-plugins)
+You can either search for any of these terms (e.g. /mappings, /commands, /configuration) or look at the documentation table of contents, find what you want and then with the cursor on top of a link (highlighted bits of text on the right) type C-] to be transported to that section of the documentation.
+
+
 ## 需要新增一個章節說明 jumplist
 [回到最上層](#Top-Content)
 
@@ -171,31 +270,7 @@ https://stackoverflow.com/questions/1506764/how-to-map-ctrla-and-ctrlshifta-diff
 可以檢查那個字元的ascii code
 Also make use of the Normal mode command ga to inspect the resulting keycode. Place the cursor over a special character, and type ga. This will provide you with ascii information of the character under the cursor.
 
-## Jumps (jump-motions)
-[回到最上層](#Top-Content)
 
-A "jump" is a command that normally moves the cursor several lines away.  If
-you make the cursor "jump" the position of the cursor before the jump is
-remembered.  You can return to that position with the "''" and "``" commands,
-unless the line containing that position was changed or deleted.  The
-following commands are "jump" commands: "'", "`", "G", "/", "?", "n", "N",
-"%", "(", ")", "[[", "]]", "{", "}", ":s", ":tag", "L", "M", "H" and the
-commands that start editing a new file.
-簡單來說當你使用jumps移動後，會被紀錄起來。
-
-CTRL-O Go to [count] Older cursor position in jump list (not a motion command).
-CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
-`:ju[mps]` Print the jump list.
-`cle[arjumps]` Clear the jump list of the current window.
-
-`^]` jump to tag under cursor //不太會使用
-Type <C-]> to follow a link (you can differentiate links from regular text because links are highlighted)
-` '都可以作為jumps的前導
-g'{mark}
-可以前往但不改變jumplist，更多資訊可以看 `:h keepjumps`
-
-`` or '' 可以回到上一個jump或者上一次jumplist的地方
-To the position before the latest jump, or where the last "m'" or "m`" command was given.
 
 
 # changelist
@@ -203,17 +278,6 @@ To the position before the latest jump, or where the last "m'" or "m`" command w
     g; to go back the changelist
     g, to go forward the changelist
 
-# 搜尋
-[回到最上層](#Top-Content)
-
-
-
-    / = 搜尋
-    ? = 反向搜尋
-    n = 移往下一個搜尋結果
-    N = 移往上一個搜尋結果
-    * search for the word under the cursor.
-    # search for the word under the cursor reverse.
 
 
 
@@ -245,6 +309,21 @@ yy5p 複製整行且貼上五次
 {number}u undo 幾次
 {number}^r redo 幾次
 
+Abbreviations are the snippets of vim.
+相較於其他的IDE，vim的算是簡易版本。
+
+:earlier 1f
+:later 1f
+Vim is very special in that provides multi-level undo, that is, every time that you undo stuff and start doing something different you create a new branch of undos. Vim keeps all of these branches available for you to tinker with so no change is lost. You can find more info about this topic in :h undo-branches. One nugget: If you use :earlier 1f you can undo all changes you did from the last time you saved a file. Fear not for you can do :later 1f to go forward in time. (You can also repeat any of these commands to go backwards and forward in time. Cool or what?).
+
+縮寫 abbreviation ab
+A cool thing about abbreviations is that they are expanded automatically after typing them and pressing <space> which fits in perfectly with the natural flow of typing text. Although they can expanded explicitly by typing C-] if that’s what you want.
+:iab f function(){}<Left><Left><Left>
+當你打完縮寫後，可以使用空白鍵就會自動轉換，或者你可以再打完的字上方按下`C-]`會完成自動轉換。
+:ab hi hi comman user
+hiCtrl-V 可以讓你不會被縮寫轉換
+(但我的C-v已經綁訂成貼上複製內容了)
+
 d15G砍掉第幾行
 
 swap two characters? Type dlp (or xp).
@@ -263,6 +342,30 @@ e.g.
 
 `@:` or `@@` 可以使用最後的ex commands
 
+# 搜尋
+[回到最上層](#Top-Content)
+
+
+
+    / = 搜尋
+    ? = 反向搜尋
+    n = 移往下一個搜尋結果
+    N = 移往上一個搜尋結果
+    * search for the word under the cursor.
+    # search for the word under the cursor reverse.
+
+/ or ? search can use sensitive/insensitive search
+[How to do case insensitive search in Vim](https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim)
+`/hi\c` or `/\chi` (sensitive) 這樣就會忽略大小寫 e.g. hi, Hi, HI , hI that's ok
+`/hi\C` or `/\Chi` (insensitive) 限定大小寫
+
+`:h ic` `:h scs`
+如果同時開啟ic 與 scs 會很方便
+e.g. /the
+`The, tHe, THe, thE, ThE ,the`
+如果你/the，上面每個都會被搜尋到。如果你是/The，只有The會被搜尋到。
+如果真的不想搜尋到 thE 等等的，可以/the\C。
+
 將所此文件所有# 開頭的字元，取代成空字串
 :%s/^#//
 
@@ -272,19 +375,30 @@ Substituting Text
 :[range]s/{pattern}/{substitute}/{flags}
 
 只會取代該行第一個符合的字串
-:s/led/gold
+`:s/led/gold`
 
 取代該行所有符合的字串
-:s/led/gold/g
+`:s/led/gold/g`
 
 
 取代此文件所有符合的字串
 :%s/led/gold/g
 
 global flags，還有其他flags可以一同搭配
-i 忽略大小姐
+i 忽略大小寫
 c 每次取代前會做詢問
+`:h 10.3`
+`:h :s_flags`
 
+如果你已經先有做搜尋了，那麼當你在取代的ex command是空白的時候，會用最後一次搜尋的內容做為要取代的對象
+```
+/fun
+:%s//function/gc
+```
+此範例會將所有符合fun字串都替換成function。
+
+`:%s/\. /\.\r/g`
+此範例會將所有句子的句點，取代成句點與換行，查成分行的目的。
 
 # Vim’s Registers
 [回到最上層](#Top-Content)
@@ -351,16 +465,20 @@ https://www.brianstorti.com/vim-registers/
 `"*` : "*p
 `"+` : "+p
 
-# insert mode
+# Insert mode
 [回到最上層](#Top-Content)
 
+`a` , `A` , `i` , `I` , `<insert>` , `gI` , `gi` , `o` , `O`
+[ count ] o 使用 insert mode 模式，並將輸入後的字向下插入N行。
+[ count ] O 使用 insert mode 模式，並將輸入後的字向上插入N行。
 Ctrl-T indents
 Ctrl-D unindents
-`gi` sends you to the last place you left Insert mode.
+`gi` sends you to the last place you left insert mode.
 
 ## Editing Like Magic With Vim Operators
 [回到最上層](#Top-Content)
 
+`:h operator`
 operator :     an action to perform: delete, change, yank, etc
 count  : a multiplier to "perform an action {count} times"
 motion : a motion that represents a piece of text to which to appy the action defined by the operator
@@ -409,13 +527,13 @@ g~ switch case
 
 k, UP, CTRL-P 上去幾行line-wise
 
-j,DOWN, CTRL-J, <NL>, CTRL-n 下去幾行line-wise
+j,DOWN, CTRL-J, \<NL>, CTRL-n 下去幾行line-wise
 gk  , gj 無視line-wise 直接上下幾行
 
-<NL> 就是CTRL-J 與 CTRL-M <CR>不同
+\<NL> 就是CTRL-J 與 CTRL-M \<CR>不同
 
 其他line-wise操作字符還有
-`-`, `+ or CTRL-M or <CR>`, `_`, `{count}%`
+`-`, `+ or CTRL-M or \<CR>`, `_`, `{count}%`
 
 
 yy,Y,dd,cc is linewise
@@ -547,7 +665,9 @@ The way that you specify a text object within a command is by combining the lett
 
 `:h map-modes` 顯示各種模式map 範圍
 
-`:help keycodes` 顯示相等鍵
+`:h key-notation key-codes keycodes`These names for keys are used in the documentation.  They can also be used<br>
+e.g. \<CR> , \<NL> , \<BS> , \<Tab>
+
 
 `:h quoteplus` 查看primay 暫存器相關介紹
 
@@ -564,6 +684,7 @@ The way that you specify a text object within a command is by combining the lett
 `:h set-option` 查看各種set方法，其中set {option}! set inv{option}可以做toggle選項
 
 `:h linewise-register` 說明行剪下的原因
+
 
 # Vim keycode
 [回到最上層](#Top-Content)
@@ -617,6 +738,12 @@ Eventually though you’ll want to exit insert mode and do other stuff. There ar
     viw
     v2e
 
+
+    v for visual mode character-wise. When you move around you go selecting character by character
+    V for visual mode line-wise. When you move around you go selecting line by line
+    <C-V> for visual mode block-wise. When you move around yo go selecting rectangular blocks of text
+在 visual mode下，可以使用`o` or `O` 去切換你的游標位置。
+
 # marco
 [回到最上層](#Top-Content)
 
@@ -660,41 +787,26 @@ Reformat the entire file: `ggvGgq`
 
 C-x C-o 內建的 Omni completion
 
+有需要去查如何取得 movement 次數的方式。這樣才可以bind oo的快捷鍵
+
 :goto 不確定是什麼
 
 normal K keyword search (not implemented in VSCode vim)
-normal z<CR> 將此行捲動成文件首行。
+normal z\<CR> 將此行捲動成文件首行。
 normal z.  相同於 zz 將此行捲動成文件中間。
 https://blog.csdn.net/nyist327/article/details/48625385
 VIM中的翻页命令
-{number}zz 移動到該行，並且將該行放在視窗中間
-{number}|移到對應的欄位
-整页翻页 ctrl-f ctrl-b
-f就是forword b就是backward
 
-翻半页
-ctrl-d ctlr-u
-d=down u=up
-
-滚一行
-ctrl-e ctrl-y
-
-zz 让光标所在的行居屏幕中央
-zt 让光标所在的行居屏幕最上一行 t=top
-zb 让光标所在的行居屏幕最下一行 b=bottom
 
 https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/editing-like-magic-with-vim-operators/
 g~ (switch case): Changes letters from lowercase to uppercase and back. Alternatively, use gu to make something lowercase and gU to make something uppercase
 = (format code): Formats code
 gUw capitalizes a word
 
+`:h :global`
+需要再研究
+`:g` reverse is `:v`
 
-A cool thing about abbreviations is that they are expanded automatically after typing them and pressing <space> which fits in perfectly with the natural flow of typing text. Although they can expanded explicitly by typing C-] if that’s what you want.
-:iab f function(){}<Left><Left><Left>
-
-:earlier 1f
-:later 1f
-Vim is very special in that provides multi-level undo, that is, every time that you undo stuff and start doing something different you create a new branch of undos. Vim keeps all of these branches available for you to tinker with so no change is lost. You can find more info about this topic in :h undo-branches. One nugget: If you use :earlier 1f you can undo all changes you did from the last time you saved a file. Fear not for you can do :later 1f to go forward in time. (You can also repeat any of these commands to go backwards and forward in time. Cool or what?).
 
 vscode alt-j/alt-k 兩種bind 建議
 https://medium.com/@airyboy/using-vim-like-navigation-for-intellisense-suggestions-in-vscode-3c310ac73844
@@ -789,6 +901,9 @@ N代表設定的行數大小或者寬度大小，取決於你使用的是vs還�
 在vscode vim keymap中不能使用行數設定
 
 
+### Normal mode
+[回到最上層](#Top-Content)
+
 tabe[dit] {file}
 :tabn = gt
 :tabp = gT
@@ -796,6 +911,7 @@ tabe[dit] {file}
 
 close window
 C-w c or :clo or :close
+:h tabpage
 
 
 [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip)
@@ -805,9 +921,6 @@ C-w c or :clo or :close
     Use <C-w> _ to have a horizontal split take its maximum height
     Use <C-W> = to have all splits have equal dimensions
 
-
-### Normal mode
-[回到最上層](#Top-Content)
 
 Next tab: gt
 Prior tab: gT
@@ -836,6 +949,24 @@ tabnoly 只留下此tab。
     u undo last change
     C-R redo last undo
     {count}u undo last {count} changes
+							*:ea* *:earlier*
+:earlier {count}	Go to older text state {count} times.
+:earlier {N}s		Go to older text state about {N} seconds before.
+:earlier {N}m		Go to older text state about {N} minutes before.
+:earlier {N}h		Go to older text state about {N} hours before.
+:earlier {N}d		Go to older text state about {N} days before.
+
+:earlier {N}f		Go to older text state {N} file writes before.
+			When changes were made since the last write
+			":earlier 1f" will revert the text to the state when
+			it was written.  Otherwise it will go to the write
+			before that.
+			When at the state of the first file write, or when
+			the file was not written, ":earlier 1f" will go to
+			before the first change.
+
+:h undo-tree
+:h :undolist
 
  Resizing splits
 Vim’s defaults are useful for changing split shapes:
@@ -843,21 +974,33 @@ Vim’s defaults are useful for changing split shapes:
 ctrl + w _
 "Max out the width of the current split
 ctrl + w |
-"Normalize all split sizes, which is very handy when resizing terminal
-ctrl + w =
-ctrl + w -
-ctrl + w +
 
- More split manipulation
-"Swap top/bottom or left/right split
-Ctrl+W R
-"Break out current window into a new tabview
-Ctrl+W T
-"Close every window in the current tabview but the current one
-Ctrl+W o
+C-w _ 將此分割高度最大化
+`resize`
+C-w | 將此分割寬度最大化
+`vertical resize`
+C-w < / C-w > 垂直切割改變寬度
+C-w - / C-w + 水平切割改變高度
+C-w = 平均分割視窗
+5 C-w < 向左移動五
+
+C-w r 遞增交換切割視窗
+C-w R 遞減交換切割視窗
+C-w T 將當前視窗移動到新的 tabview
+C-w o 在此tabview中，關閉其它Window，只留下目前游標所在的window
+C-w t go to the top window
+C-w b go to the bottom window
+
+:h Ctrl-w
+
+
+Ctrl+W n
+Create a new window and start editing an empty file in it.
 
 Ctrl+W s 水平切割現在視窗
 Ctrl+W v 垂直切割現在視窗
+
+:h window-resize and h: window-moving
 
 CTRL+w, c: Closes a window but keeps the buffer
 Ctrl + w j = 把游標往下面的分割視窗移動
@@ -870,6 +1013,7 @@ Ctrl + w Ctrl + w = 在各個分割視窗間切換
 ctrl + w n
 ctrl + w v
 ctrl + w s
+ctrl + w x
 CTRL+w, r: Moves the current window to the right
 Control+w, then hit q
 
@@ -877,6 +1021,20 @@ ctrl + w H
 ctrl + w L
 ctrl + w J
 ctrl + w K
+
+switch vim layout
+[To switch from vertical split to horizontal split fast in Vim](https://stackoverflow.com/questions/1269603/to-switch-from-vertical-split-to-horizontal-split-fast-in-vim)
+
+
+    To change two vertically split windows to horizonally split
+    Ctrl-w t Ctrl-w K
+    Horizontally to vertically:
+    Ctrl-w t Ctrl-w H
+    Explanations:
+    Ctrl-w t makes the first (topleft) window current
+    Ctrl-w K moves the current window to full-width at the very top
+    Ctrl-w H moves the current window to full-height at far left
+
 
 
 # Vim password protext files.
@@ -899,6 +1057,14 @@ ctrl + w K
 :set option  直接線上設定，有些設定需加 = 後加上設定值內容。
 :set nooption  取消該設定。
 :set 後面是可以多重設定的。例如 :set autoindent noconfirm autowrite，這樣三種設定就會同時重設。
+
+# colorschemes
+[此作者在文章中說明他是用下面的顏色套件](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip)
+https://github.com/keitanakamura/neodark.vim
+
+其他可以參考的顏色配置
+https://vimawesome.com/?q=color+scheme
+https://vimawesome.com/plugin/vim-colorschemes-sweeter-than-fiction
 
 # Vim 寫得不錯的網站 article website
 [回到最上層](#Top-Content)
@@ -943,14 +1109,20 @@ $ vim -u NONE fileyouwantopen
 ```
 
 [What is the difference between j, CTRL-J, <NL> and CTRL-N in normal mode?](https://vi.stackexchange.com/questions/4246/what-is-the-difference-between-j-ctrl-j-nl-and-ctrl-n-in-normal-mode)
-講述Enter 與 <NL>之間的差異
+講述Enter 與 \<NL>之間的差異
 
 [ Navigate your vscode like it's 1999 (the vim way) ](https://dev.to/karlredman/navigate-your-vscode-like-its-1999-the-vim-way-3632)
 
-一個可以讓你練習打字的地方
+一個可以讓你練習打字的地方 [source](https://www.barbarianmeetscoding.com/blog/exploring-vim)
+
+* typing.com. I spent a ton of time in this website to kill all my bad habits and learn touch typing the proper way. I still use it today to practice typing katas when I feel my touch typing is getting rusty. It’s amazing how this site has improved over the years.
 [typing.com](https://www.typing.com/)
+* keyzen.io. This is a nice touch typing trainer that focuses on helping you improve your typing skills with uncommon characters which are common in programming such as ;, {, (, /
+[keyzen.io](http://wwwtyro.github.io/keyzen/)
+* zType is a typing game where you take the role of a ship that fires at an alien swarm through typing. A really fun way to practice touch typing. WARNING: Very addictive and exciting. Don’t use before going to bed.
+[zType](https://zty.pe/)
 
-
+* https://en.wikibooks.org/wiki/Learning_the_vi_Editor/Vim/Modes
 https://github.com/VSCodeVim/Vim/blob/master/ROADMAP.md
 
 https://github.com/VSCodeVim/Vim#-emulated-plugins
@@ -968,6 +1140,8 @@ All of this above is also supported in Neovim. In fact, this is one of the reaso
 The nitty gritty of packages and different types of plugins is out of the scope of this article, but I promise to write a more in depth article on this topic!
 ```
 
+[如何在 Linux 下利用 Vim 搭建 C/C++ 开发环境?](https://www.zhihu.com/question/47691414)
+2018 年的Vim搭建教學文，使用Vim8
 # VScode Vim Keymap特殊用法
 [回到最上層](#Top-Content)
 
@@ -1033,32 +1207,8 @@ Visual `af` 可以讓你在括號內選取所有字（含括號） （blocks of 
 
 ## vscode plugin
 [回到最上層](#Top-Content)
+* surround
 
-### vim-surround
-[回到最上層](#Top-Content)
-
-https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/surrounding-things-with-vim-surround/
-不同於vim s 為setiences
-vscode 中 s 為surrounding
-a 代表 <>
-b 代表 ()
-B 代表 {}
-你也可以使用' "來替換
-
-    ds' to delete the surrounding ' (ds{char})
-    cs'" to change the surrounding ' for " (cs{old}{new})
-    ysaptli` to surround a paragraph with an <li> tag (ys{motion}{char})
-    可以使用各種html tag
-
-You can also use vim-surround by selecting a bit of text in _visual mode and then using S{desired character}_
-
-    ds delete surroundings e.g. ds"
-    cs change surroundings e.g. cs*tem>
-    ys add surroundings e.g. ysiw"
-    ds" delete surrounding quotes
-    cs*tem> change surrounding * for the <em> tag
-    ysiw" surround word under the cursor with quotes
-    S In visual mode you can select some text, then type S to add surroundings. e.g. Stp> to wrap the selection in a <p> tag
 
 # Vim Plugin
 [回到最上層](#Top-Content)
@@ -1130,6 +1280,9 @@ I" means inside a quote string  <br>
 `:h targets`
 https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
 
+targets.vim教學文章
+https://www.barbarianmeetscoding.com/blog/exploring-vim-plugins-improve-and-extend-your-text-objects-with-targets-vim
+
 ## sneak
 [回到最上層](#Top-Content)
 
@@ -1200,6 +1353,9 @@ fzf.vim, ctrlP and denite both like VSCode quick open file CTRL-P
 
 https://www.barbarianmeetscoding.com/blog/5-minutes-vim-ctrl-p-considered-harmful
 該作者將 <leader>綁定 <space>，並且配置 `nnoremap <leader>s :<C-u>FZF<CR> `開啟模糊收尋
+
+相關的教學也可以看同一個作者的其他文章
+https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip#jumping-from-file-to-file
 
 ##  vim-peekaboo
 [回到最上層](#Top-Content)
@@ -1274,8 +1430,77 @@ Tab-completion of variables, functions, etc., is a common feature of editors, no
 
 ## surround
 [回到最上層](#Top-Content)
+主要就是把所有的`s`,`S` operate 用成這個套件的取代。
+如果你在vim 中 s 原生為 setiences。
+
+vim中，如果使用 `cib`,`ciB`會是()與{}
+而surround多了一個 `a` object-text
+* a 代表 <>
+* b 代表 ()
+* B 代表 {}
+
+`:h surround`
+* Delete surroundings is `ds` .
+```
+Old text                  Command     New text ~
+  Hello *world!"           ds"         Hello world!
+  (123+4*56)/2              ds)         123+456/2
+  <div>Yo!*</div>           dst         Yo!
+```
+* Change surroundings is `cs` .
+```
+Old text                  Command     New text ~
+  "Hello *world!"           cs"'        'Hello world!'
+  "Hello *world!"           cs"<q>      <q>Hello world!</q>
+  (123+4*56)/2              cs)]        [123+456]/2
+  (123+4*56)/2              cs)[        [ 123+456 ]/2
+  <div>Yo!*</div>           cst<p>      <p>Yo!</p>
+```
+* "ys" operates is "you surround"
+`ys` takes a valid Vim motion or text object as the first object, and wraps
+it using the second argument as with |cs|.  (It's a stretch, but a good
+mnemonic for "ys" is "you surround".)
+
+```
+Old text                  Command     New text ~
+  Hello w*orld!             ysiw)       Hello (world)!
+```
+
+* yss{text-object}
+As a special case, *yss* operates on the current line, ignoring leading
+whitespace.
+
+  Old text                  Command     New text ~
+      Hello w*orld!         yssB            {Hello world!}
 
 Another big productivity-booster. With this plugin, you can quickly surround blocks of text with some form of bracket or quote, or change what it is already surrounded by to something else. Extremely useful in just about every programming language.
+
+
+https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/surrounding-things-with-vim-surround/
+你也可以使用' "來替換
+
+    ds' to delete the surrounding ' (ds{char})
+    cs'" to change the surrounding ' for " (cs{old}{new})
+    ysaptli` to surround a paragraph with an <li> tag (ys{motion}{char})
+    可以使用各種html tag
+
+You can also use vim-surround by selecting a bit of text in _visual mode and then using S{desired character}_
+
+    ds delete surroundings e.g. ds"
+    cs change surroundings e.g. cs*tem>
+    ys add surroundings e.g. ysiw"
+    ds" delete surrounding quotes
+    cs*tem> change surrounding * for the <em> tag
+    ysiw" surround word under the cursor with quotes
+    S In visual mode you can select some text, then type S to add surroundings. e.g. Stp> to wrap the selection in a <p> tag
+
+
+[surround pratice](https://www.barbarianmeetscoding.com/blog/exploring-vim-plugins-a-methodology-to-become-1-percent-better-every-week#learning-and-practicing-plugins)
+```
+What a wonderful age we're living in
+```
+yss"
+讓你快速的加上左右的"
 
 ## syntastic
 [回到最上層](#Top-Content)
