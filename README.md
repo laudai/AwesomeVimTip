@@ -1,11 +1,11 @@
 ## 聲明
 
-此文件的目的是紀錄各種常見、好用的 Vim 功能，並非是給尚未接觸過得讀者使用。
+此文件的目的是紀錄各種常見、好用的 Vim 功能，並非是給尚未接觸過 vim 的讀者使用。
 如果需要學習 Vim 基礎操作，可以先使用`$vimtutor`進行學習。
 
-範例使用例句:
+此文件範例使用例句(a pangram sentence) :
 
-```
+```text
 The quick brown fox jumps over the lazy dog.
 ```
 
@@ -15,19 +15,28 @@ The quick brown fox jumps over the lazy dog.
 
 - [Top Content](#top-content)
 - [Command-line-mode](#command-line-mode)
-    - [符號意思](#符號意思)
+  - [符號意思](#符號意思)
   - [Ex-command mode](#ex-command-mode)
 - [移動](#移動)
   - [畫面移動](#畫面移動)
   - [游標移動](#游標移動)
+    - [motion](#motion)
+      - [以 g 開頭的 motion 移動](#以-g-開頭的-motion-移動)
+    - [Marks (mark-motions)](#marks-mark-motions)
     - [Jumps (jump-motions)](#jumps-jump-motions)
-    - [Jumps ex command](#jumps-ex-command)
-  - [motion](#motion)
-    - [以 g 開頭的 motion 移動](#以-g-開頭的-motion-移動)
-  - [Marks (mark-motions)](#marks-mark-motions)
-- [編輯 edit](#編輯-edit)
-- [搜尋](#搜尋)
+      - [Jumps ex command](#jumps-ex-command)
+- [檔案編輯 edit](#檔案編輯-edit)
+  - [ab, abbreviations, 縮寫](#ab-abbreviations-縮寫)
+  - [undo and redo ex command](#undo-and-redo-ex-command)
+  - [搜尋 search](#搜尋-search)
+    - [搜尋相關設定](#搜尋相關設定)
+    - [特殊搜尋方式](#特殊搜尋方式)
+  - [搜尋與取代之 ex command 範例](#搜尋與取代之-ex-command-範例)
+    - [global flags](#global-flags)
 - [Vim’s Registers](#vims-registers)
+  - [Vim Registers 基礎觀念](#vim-registers-基礎觀念)
+  - [Register 使用方式](#register-使用方式)
+    - [與暫存器相關使用範例](#與暫存器相關使用範例)
   - [Vim clipboard](#vim-clipboard)
 - [Insert mode](#insert-mode)
   - [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
@@ -47,15 +56,36 @@ The quick brown fox jumps over the lazy dog.
   - [defiend your own commands](#defiend-your-own-commands)
 - [shortcuts](#shortcuts)
 - [window split](#window-split)
-    - [Normal mode](#normal-mode)
+  - [Normal mode](#normal-mode)
 - [Vim password protext files.](#vim-password-protext-files)
 - [Vim Configuration](#vim-configuration)
   - [如何得知目前的設定](#如何得知目前的設定)
 - [colorschemes](#colorschemes)
 - [Vim 寫得不錯的網站 article website](#vim-寫得不錯的網站-article-website)
 - [VScode Vim Keymap 特殊用法](#vscode-vim-keymap-特殊用法)
-  - [vscode Multi-Cursor Mode](#vscode-multi-cursor-mode)
   - [vscode plugin](#vscode-plugin)
+    - [要準備的方向](#要準備的方向)
+      - [advanced-new-file](#advanced-new-file)
+      - [auto-rename-tag](#auto-rename-tag)
+      - [better-comments](#better-comments)
+      - [Bookmarks](#bookmarks)
+      - [DotENV](#dotenv)
+      - [EditorConfig for VS Code](#editorconfig-for-vs-code)
+      - [GitHub Pull Requests and Issues](#github-pull-requests-and-issues)
+      - [GitLens — Git supercharged](#gitlens--git-supercharged)
+      - [Live Server](#live-server)
+      - [Markdown All in One](#markdown-all-in-one)
+      - [Markdown Preview Enhanced](#markdown-preview-enhanced)
+      - [markdownlint](#markdownlint)
+      - [open in browser](#open-in-browser)
+      - [Polacode](#polacode)
+      - [Prettier - Code formatter](#prettier---code-formatter)
+      - [Remote - SSH](#remote---ssh)
+      - [Settings Sync](#settings-sync)
+      - [TODO Highlight](#todo-highlight)
+      - [Visual Studio IntelliCode](#visual-studio-intellicode)
+  - [vscode vim Multi-Cursor Mode](#vscode-vim-multi-cursor-mode)
+  - [vscode plugin](#vscode-plugin-1)
 - [Vim Plugin](#vim-plugin)
   - [vimawesome](#vimawesome)
   - [jedi-vim](#jedi-vim)
@@ -108,22 +138,22 @@ The quick brown fox jumps over the lazy dog.
 
 [回到最上層](#Top-Content)
 
-`%` 代表整個文件
-`:%d` 刪除整個文件
-`0` 代表初始行
-`$`代表最末行
-`:10,12d a` 將第 10 到 12 行剪下，放到暫存器 a
-`:5 -2d` 代表動到第五行，再向上移動兩行，將該行刪除
-`:5,-2d` 代表移動到第五行，將此行往上再刪除兩行
-`:.,3 d` 代表當前行道地行之間的資料都刪除 (可以正向選取或反向選取)
-個人認為 `:.,+2 +{motion}` `:.,5 +{motion}` 這種方式比較好理解
+- `%` 代表整個文件
+- `:%d` 刪除整個文件
+- `0` 代表初始行
+- `$`代表最末行
+- `:10,12d a` 將第 10 到 12 行剪下，放到暫存器 a
+- `:5 -2 d` 代表移動到第五行，再向上移動兩行，將該行刪除
+- `:5,-2 d` 代表移動到第五行，並將該行到-2 行內的資料全數刪除
+- `:.,3 d` 代表當前行到第 3 行之間的資料都刪除 (可以正向選取或反向選取)
+
+個人認為 `:.,+2 {operator}` `:.,5 {operator}` 這種方式比較好理解
 
 ## Ex-command mode
 
 [回到最上層](#Top-Content)
 
-可以使用 `Q` 或者 `gQ` 的方式進入 `Ex-command mode`
-詳細差異請看 `:h Q`
+可以使用 `Q` 或者 `gQ` 的方式進入 `Ex-command mode`，詳細差異請看 `:h Q`
 
 離開 Ex-command mode
 `:vi` or `:visua`
@@ -140,44 +170,102 @@ The quick brown fox jumps over the lazy dog.
 
 [回到最上層](#Top-Content)
 
-`H` 移到目前螢幕的最上方
-`M` 移到目前螢幕的中間
-`L` 移到目前螢幕的最下方
+- `H` 移到目前螢幕的最上方
+- `M` 移到目前螢幕的中間
+- `L` 移到目前螢幕的最下方
 
 **Scrolling relative to cursor** _scroll-cursor_
-`zt` 將該前行放在螢幕最上方
-`zz` 將該前行放在螢幕中間
-`zb` 將該前行放在螢幕最下方
+
+- `zt` 將該前行放在螢幕最上方
+- `zz` 將該前行放在螢幕中間。可使用`[count]zz`
+- `zb` 將該前行放在螢幕最下方
+
+VSCode vim keymap 沒有實做`[count]zz`
 
 **Scrolling downwards/upwards** _scroll-down / scroll-up_
-`ctrl-f` / `ctrl-b` 向下/向上翻一頁(forward, backward)
-`ctrl-d` / `ctrl-u` 向下/向上翻半頁(down, up)
-`ctrl-e` / `ctrl-y` 向下/向上移動一行
+
+- `ctrl-f` / `ctrl-b` 向下/向上翻一頁(forward, backward)
+- `ctrl-d` / `ctrl-u` 向下/向上翻半頁(down, up)
+- `ctrl-e` / `ctrl-y` 向下/向上移動一行
 
 ## 游標移動
 
 [回到最上層](#Top-Content)
 
-`[ count ]zz` 移動到該行，並且將該行放在視窗中間
-`[ count ]|` 移到對應的欄位
+- `[count]<CR>` 向下移動 N 行，不會在 jumplist 中留下紀錄。<br>
+  e.g. 10Enter
+- `:[count]` 移動到第 N 行，不會在 jumplist 中留下紀錄。<br>
+  e.g. :10\<CR>
+
+### motion
+
+[回到最上層](#Top-Content)
 
 `:h motion`
-`[ count ]{ motion }` , numbeer + jhlkew and so on.
-`[ count ]<CR>` 向下移動到 N 行，不會在 jumplist 中留下紀錄。
-e.g. 10Enter
-`:[ count ]` 移動到 N 行，不會在 jumplist 中留下紀錄。
-e.g. :10\<CR>
+
+- `0` : 移動到此行第一個字元。
+- `^` : 移動到此行第一個非空白字元。
+- `$` : 移動到此行最後一個字元。
+- `g_` : 移動到此行最後一個非空白字元。
+- `w` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**開頭**_ 。
+- `b` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**上一個**_ 字的 _**開頭**_ 。
+- `e` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**結尾**_ 。
+- `ge` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**上一個**_ 字的 _**結尾**_ 。
+- `W` : 以空白視為斷字。移動到 _**下一個**_ 字的 _**開頭**_ 。
+- `B` : 以空白視為斷字。移動到 _**上一個**_ 字的 _**開頭**_ 。
+- `E` : 以空白視為斷字。移動到 _**下一個**_ 字的 _**結尾**_ 。
+- `gE` : 以空白視為斷字。移動到 _**上一個**_ 字的 _**結尾**_ 。
+- `[count]f{char}` : 移動到下一個符合該字元上方。
+- `[count]F{char}` : 移動到上一個符合該字元上方。
+- `[count]t{char}` : 移動到下一個符合該字元前方。
+- `[count]T{char}` : 移動到上一個符合該字元前方。
+- `;` : 移動到下一個符合條件的字元
+- `,` : 移動到上一個符合條件的字元
+- `[count]|` 移到對應的欄位
+- `[count]{motion}` , number + jhlkweb and so on.<br>
+  e.g. `5j`, `2w`, `3;`, `20gj`
+
+#### 以 g 開頭的 motion 移動
+
+[回到最上層](#Top-Content)
+
+`:h changelist`
+
+- `[count]g;` 回到上一個修改的地方（changelist)
+- `[count]g,` 回到下一個修改的地方（changelist)
+- `gi` 回到上次使用 insert mode 的地方
+- `[count]gI` 移動到該行 column 1 位置，並進入 insert mode
+- `gd` 移動到 local 定義的地方
+- `gD` 移動到 global 定義的地方
+- `gf` 移動到目前游標下的檔案位置，可以使用 go to file 來記憶
+- `gF` 類似`gf`但是有檔名的限制
+
+### Marks (mark-motions)
+
+[回到最上層](#Top-Content)
+
+`m{a-zA-Z}` 將目前游標的位置標記為{a-zA-Z}
+
+**\`** or **\'** 都可以作為 jumps to mark 的前導。兩者差異在於 **\`** 可以到原本指定的位置，而且是獨占的 exclusive( 不懂其意思 )； **\'** 則是跳到指定位置，但是是 **linewise**。
+
+可以前往但不改變 jumplist，更多資訊可以看 `:h keepjumps`
+
+```text
+g`{mark}
+g'{mark}
+```
 
 ### Jumps (jump-motions)
 
 [回到最上層](#Top-Content)
 
 `:h jump-motions`
+
 jump command 是可以讓你快速的在文件中移動的方式。
 如果標記的內容沒有消失或移除，你可以快速回到上一次 "jump" 的位置。
 
-```
-`` 或者 '' 兩種方式都可以讓你在上次jump與現在位置做交換。
+```text
+`` 或者 '' 兩種方式都可以讓回到上次jump的位置。
 ※ 注意與 `" '"這兩種與 `` '' 不同。
 ```
 
@@ -187,259 +275,313 @@ jump command 是可以讓你快速的在文件中移動的方式。
 "'", "`", "G", "/", "?", "n", "N", "%", "(", ")", "[[", "]]", "{", "}", ":s", ":tag", "H", "M", "L"
 ```
 
-`gg` 移到整份文件的最上方
-`G` 移到整份文件的最下方
-`10G`一樣是移動，但會把此動作加入 jumplist 內 // 10gg == 10G
-`%` 在括號內移動 `:h %` or `:h matchpairs`
-`(` `)` 把游標移動到上一個、下一個句子(sentence)
-`{` `}` 把游標移動到上一個、下一個段落(paragraph)
-`[[` 把游標移到上一個第一欄為 **{** 開頭的句子，若無則移動到文件首行
-`]]` 把游標移到下一個第一欄為 **{** 開頭的句子，若無則移動到文件末行
-`[]` 把游標移到上一個第一欄為 **}** 開頭的句子，若無則移動到文件首行
-`][` 把游標移到下一個第一欄為 **}** 開頭的句子，若無則移動到文件末行
-
-`[ count ] ctrl-o` 回到舊的 jump 設定的地方（不是 motion 命令）
-`[ count ] ctrl-i` 回到新的 jump 設定的地方（不是 motion 命令）
+- `gg` 移到整份文件的最上方
+- `G` 移到整份文件的最下方
+- `10G` 移動到第 10 行，跳轉後會將 _**最後離開**_ 的行數加入 jumplist 內 // 10gg == 10G
+- `%` 在括號內移動 ( 詳情可參考`:h %` or `:h matchpairs` )
+- `(` `)` 把游標移動到上一個、下一個句子(sentence)
+- `{` `}` 把游標移動到上一個、下一個段落(paragraph)
+- `[[` 把游標移到上一個第一欄為 **{** 開頭的句子，若無則移動到文件首行
+- `]]` 把游標移到下一個第一欄為 **{** 開頭的句子，若無則移動到文件末行
+- `[]` 把游標移到上一個第一欄為 **}** 開頭的句子，若無則移動到文件首行
+- `][` 把游標移到下一個第一欄為 **}** 開頭的句子，若無則移動到文件末行
+- `[count]ctrl-o` 回到舊的 jump 設定的地方（不是 motion 命令）
+- `[count]ctrl-i` 回到新的 jump 設定的地方（不是 motion 命令）
 
 ```
-CTRL-O Go to [count] Older cursor position in jump list (not a motion command).
+CTRL-O Go to [count] older cursor position in jump list (not a motion command).
 CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 ```
 
 `^]` 同 `C-]`jump to tag under cursor，會跑到下一個有 tag 的地方
-你可以在 Vim 文件中，在特定有 tag 標籤的文字上，透過 `C-]` 會幫你跳轉到該頁面。若要跳回原處需要 `C-O`
+你可以在 Vim 文件中，在特定有 tag 標籤的文字上，透過 `C-]` 會幫你跳轉到該頁面。若要跳回原處需要 `<C-o>`
 
 > You can either search for any of these terms (e.g. /mappings, /commands, /configuration) or look at the documentation table of contents, find what you want and then with the cursor on top of a link (highlighted bits of text on the right) type C-] to be transported to that section of the documentation.
 > [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-plugins-a-methodology-to-become-1-percent-better-every-week#configuring-plugins)
 
-### Jumps ex command
+#### Jumps ex command
 
 [回到最上層](#Top-Content)
 
-`:ju[mps]` Print the jump list.
-`cle[arjumps]` Clear the jump list of the current window.
+- `:ju[mps]` Print the jump list.
+- `:cle[arjumps]` Clear the jump list of the current window.
 
 最初提到的地方是 `:h help.txt`，詳情請看`:h tags`
 
-## motion
+# 檔案編輯 edit
 
 [回到最上層](#Top-Content)
 
-`0` : 移動到此行第一個字元。
-`^` : 移動到此行第一個非空白字元。
-`$` : 移動到此行最後一個個字元。
-`g_` : 移動到此行最後一個非空白字元。
+- `[count]u` undo <br>
+- `[count]ctrl-r` redo <br>
+- `U` 整行恢復 <br>
+- `[count].` 重複最後一次做的動作幾次(可配合`n`, `N`, `,`, `;` 一起使用，會出其的好用)
+- `~` 改變目前游標字母大小寫
+- `g~{motion}` 改變到{motion}之間的字母大小寫
+- `g~~` 改變整行字母大小寫
+- `>>` 增加縮排
+- `<<` 減少縮排
 
-`w` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**開頭**_ 。
-`b` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**上一個**_ 字的 _**開頭**_ 。
-`e` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**結尾**_ 。
-`ge` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**上一個**_ 字的 _**結尾**_ 。
-`W` : 以空白視為斷字。移動到 _**下一個**_ 字的 _**開頭**_ 。
-`B` : 以空白視為斷字。移動到 _**上一個**_ 字的 _**開頭**_ 。
-`E` : 以空白視為斷字。移動到 _**下一個**_ 字的 _**結尾**_ 。
-`gE` : 以空白視為斷字。移動到 _**上一個**_ 字的 _**結尾**_ 。
-e.g. <br>
-`5j`, `2w`, `3;`, `20gj`
+- `p` 在游標後，貼上暫存器內容
+- `P` 在游標前，貼上後暫存器內容
+- `yy` 整行複製至 `0` register
+- `Y` 整行複製至 `0` register
+- `gp` 在游標後，貼上暫存器內容，貼上後游標向後移動到新的字元 (可使用 linewise 做測試)
+- `gP` 在游標前，貼上暫存器內容，貼上後游標向後移動到新的字元 (可使用 linewise 做測試)
+- `:[range]m[ove] {address}` 把該行或者選取範圍內，向上/下移動幾行(透過`+`, `-`)
 
-`[ count ]f{char}` : 移動到下一個符合該字元上方。
-`[ count ]F{char}` : 移動到上一個符合該字元上方。
-`[ count ]t{char}` : 移動到下一個符合該字元前方。
-`[ count ]T{char}` : 移動到上一個符合該字元前方。
-`;` : 移動到下一個符合條件的
-`,` : 移動到上一個符合條件的
+e.g.
 
-### 以 g 開頭的 motion 移動
+```text
+:1,5 m +4
+:.m+2
+```
 
-[回到最上層](#Top-Content)
-
-`:h changelist`
-`[ count ]g;` 回到上一個修改的地方（changelist)
-`[ count ]g,` 回到下一個修改的地方（changelist)
-`gi` 回到上次使用 insert mode 的地方
-`[ count ]gI` 回到上次使用 insert mode 的該行 column 1 位置
-`gd` 移動到 local 定義的地方
-`gD` 移動到 global 定義的地方
-`gf` 移動到目前游標下的檔案位置，可以使用 go to file 來記憶
-`gF` 類似`gf`但是有檔名的限制
-
-## Marks (mark-motions)
+## ab, abbreviations, 縮寫
 
 [回到最上層](#Top-Content)
 
-m{a-zA-Z} 將目前游標的位置標記為{a-zA-Z}
-
-**\`** or **\'** 都可以作為 jumps to mark 的前導
-
-
-兩者差異在於 **\`** 可以到原本指定的位置，而且是獨占的 exclusive( 不懂其意思 )； **\'** 則是跳到指定位置，但是是 **linewise**。
-
-g\`{mark} g'{mark} 可以前往但不改變 jumplist，更多資訊可以看
-`:h keepjumps`
-
-`` or '' 可以回到上一個 jump 的地方
-
-
-# 編輯 edit
-
-[回到最上層](#Top-Content)
-
-@@@ 從這裡繼續整理
-    u = undo，回到上一步
-    U 整行恢復
-    Ctrlr = redo，回復undo
-    . = 重複上一個步驟
-    ~ = 改變英文字母的大小寫，本來大寫會變小寫，小寫會變大寫
-    :m+{number} = 把目前這一行往下移動n行
-    :m-{number} = 把目前這一行往上移動n行
-    >>、<` = 增加、減少縮排
-    yy或Y = 複製游標所在的這一整行
-    p、P = 在游標之後、之前貼上複製的內容
-    "{character}{action}
-    “ayy = 跟yy有點像，但是是把複製的東西放到a 暫存器裡，這個a可以用其它25個英文字母代替，可以用:reg指令把目前的暫存器叫出來看
-    “ap = 在游標之後貼上a 暫存器裡的內容
-
-`.` 可以重複任何你修改的動作，你可以把它與`n`, `N`, `,`, `;` 一起使用，會出其的好用
-
-`gp` same as p but puts the cursor after the pasted selection
-貼上後，會到新貼上那行的後面
-`gP` same as P and puts the cursor after the pasted selection
-貼上後，會到新貼上那行的後面
-
-yy5p 複製整行且貼上五次
-{number}u undo 幾次
-{number}^r redo 幾次
-
-[ count ]{operator}{search command}{text-object}尋找並跳到第 count 個
-e.g. <br>
-`2c/const` 從現在游標開始，刪除並修改到第二個的 const 位置
+`:h abbreviations`
 
 Abbreviations are the snippets of vim.
 相較於其他的 IDE，vim 的算是簡易版本。
 
-:earlier 1f
-:later 1f
-Vim is very special in that provides multi-level undo, that is, every time that you undo stuff and start doing something different you create a new branch of undos. Vim keeps all of these branches available for you to tinker with so no change is lost. You can find more info about this topic in :h undo-branches. One nugget: If you use :earlier 1f you can undo all changes you did from the last time you saved a file. Fear not for you can do :later 1f to go forward in time. (You can also repeat any of these commands to go backwards and forward in time. Cool or what?).
+當你設定後，打到設定字串時，可以按下`<CR>`或`<space>` 或`^]`進行拓展，如果打完字後離開插入模式（`<C-[` or `<ESC>`）也可以進入一般模式並將字補齊。你可以使用`ab` 來進行常用的字體縮寫，或者常打錯的字自動訂正。可以使用`ab`進行轉換的有三種模式` Insert mode, Replace mode 和 Command-line mode`
 
-縮寫 abbreviation ab
-A cool thing about abbreviations is that they are expanded automatically after typing them and pressing <space> which fits in perfectly with the natural flow of typing text. Although they can expanded explicitly by typing C-] if that’s what you want.
-:iab f function(){}<Left><Left><Left>
-當你打完縮寫後，可以使用空白鍵就會自動轉換，或者你可以再打完的字上方按下`C-]`會完成自動轉換。
-:ab hi hi comman user
-hiCtrl-V 可以讓你不會被縮寫轉換
-(但我的 C-v 已經綁訂成貼上複製內容了)
+> A cool thing about abbreviations is that they are expanded automatically after typing them and pressing <space> which fits in perfectly with the natural flow of typing text. Although they can expanded explicitly by typing C-] if that’s what you want.
+> [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip#abbreviations-they-sound-boring-but-they-are-awesome)
 
-d15G 砍掉第幾行
-
-swap two characters? Type dlp (or xp).
-wap couple of lines? Type ddp.
-ant to swap a couple of paragraphs? Type dapp. 可以將兩段落互換
-
-:wa
-:qa
-:wqa
-:qa!
-
-Ex mode 多行編輯
-:[range]command[options]
 e.g.
-:10,12d a
 
-`@:` or `@@` 可以使用最後的 ex commands
+```
+:ab hi hi comman user
+:ab osf Open Software Foundation
+:ab thsi this
+:iab f function(){}<Left><Left><Left>
+```
 
-# 搜尋
+`:ia[bbrev] [<expr>] [<buffer>] [lhs] [rhs]` insert mode only.<br>
+`:ca[bbrev] [<expr>] [<buffer>] [lhs] [rhs]` command-line only.<br>
+
+如果打完縮寫字體，但不想被轉換，可以使用`<C-v><Space>`
+
+※ 注意，透過我的 vimrc config 需要使用`<C-v><C-v><Space>`
+
+## undo and redo ex command
 
 [回到最上層](#Top-Content)
 
-    / = 搜尋
-    ? = 反向搜尋
-    n = 移往下一個搜尋結果
-    N = 移往上一個搜尋結果
-    * search for the word under the cursor.
-    # search for the word under the cursor reverse.
+- `:ea[rlier]`{count}
+- `:ea[rlier]`{N}{s/m/h/d/f}
+- `:lat[er]`{count}
+- `:lat[er]`{N}{s/m/h/d/f}
+
+說明：
+
+```text
+count 為幾次
+s/m/h/d/f 為幾 秒/分/小時/天/檔案 <br>
+```
+
+> Vim is very special in that provides multi-level undo, that is, every time that you undo stuff and start doing something different you create a new branch of undos. Vim keeps all of these branches available for you to tinker with so no change is lost. You can find more info about this topic in :h undo-branches. One nugget: If you use :earlier 1f you can undo all changes you did from the last time you saved a file. Fear not for you can do :later 1f to go forward in time. (You can also repeat any of these commands to go backwards and forward in time. Cool or what?).
+> [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip#undoing-and-redoing)
+
+## 搜尋 search
+
+[回到最上層](#Top-Content)
+
+`:h search-commands`
+
+**搜尋方式**
+
+```text
+[count]/{pattern}[/]<CR> 向下搜尋字串，若有設定數量，可以移動到第N個符合的字串
+[count]?{pattern}[?]<CR> 向上搜尋字串，若有設定數量，可以移動到第N個符合的字串
+/{pattern}/{offset}<CR> 向下搜尋字串，並向上向或下移動N行
+?{pattern}?{offset}<CR> 向上搜尋字串，並向上向或下移動N行
+[count]/<CR> 向下搜尋字串，其字串與offset與前次搜尋條件相同
+[count]?<CR> 向上搜尋字串，其字串與offset與前次搜尋條件相同
+[count]//{offset}<CR> 向下搜尋字串，其字串條件與前次相同，並額外的設定offset，若無設定offset，則offset為0
+[count]??{offset}<CR> 向上搜尋字串，其字串條件與前次相同，並額外的設定offset，若無設定offset，則offset為0
+```
+
+**搜尋模式移動**
+
+```text
+n 向下一個移動到符合搜尋條件字串
+N 向上一個移動到符合搜尋條件字串
+* 向下移動到與目前游標下相同字串
+# 向上移動到與目前游標下相同字串
+```
+
+### 搜尋相關設定
+
+[回到最上層](#Top-Content)
+
+- `:h hlsearch` or `:h hls` highlight match search
+- `:h incsearch` or `:h is` screen will be updated to the matched immediately
+- `:h ignorecase` or `:h ic` ignore case in search patterns
+- `:h smartcase` or `:h scs` override the 'ignorecase' option if the search pattern contains upper case characters
+
+> 如果同時開啟 ic 與 scs 會很方便 e.g. /the The, tHe, THe, thE, ThE ,the
+
+如果你/the，上面每個都會被搜尋到。如果你是/The，只有 The 會被搜尋到。
+如果真的不想搜尋到 thE 等等的，可以 /the\C 會強迫搜尋的字母大小寫須相同。詳情請見下個小節 [特殊搜尋方式](#特殊搜尋方式)
+
+### 特殊搜尋方式
+
+[回到最上層](#Top-Content)
+
+`:h /ignorecase`
 
 / or ? search can use sensitive/insensitive search
 [How to do case insensitive search in Vim](https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim)
+
 `/hi\c` or `/\chi` (sensitive) 這樣就會忽略大小寫 e.g. hi, Hi, HI , hI that's ok
 `/hi\C` or `/\Chi` (insensitive) 限定大小寫
 
-`:h ic` `:h scs`
-如果同時開啟 ic 與 scs 會很方便
-e.g. /the
-`The, tHe, THe, thE, ThE ,the`
-如果你/the，上面每個都會被搜尋到。如果你是/The，只有 The 會被搜尋到。
-如果真的不想搜尋到 thE 等等的，可以/the\C。
+## 搜尋與取代之 ex command 範例
 
-將所此文件所有# 開頭的字元，取代成空字串
-:%s/^#//
+[回到最上層](#Top-Content)
 
 Substituting Text
-:[range]s/{pattern}/{substitute}/{flags}
+`:[range]s/{pattern}/{substitute}/{flags}`
 
-只會取代該行第一個符合的字串
-`:s/led/gold`
+- 將所此文件所有#開頭的字元，取代成空字串(Markdown 文件很好用)
+  `:%s/^#//`
 
-取代該行所有符合的字串
-`:s/led/gold/g`
+- 只會取代該行第一個符合的字串
+  `:s/led/gold`
 
-取代此文件所有符合的字串
-:%s/led/gold/g
+- 取代該行所有符合的字串
+  `:s/led/gold/g`
 
-global flags，還有其他 flags 可以一同搭配
-i 忽略大小寫
-c 每次取代前會做詢問
-`:h 10.3`
-`:h :s_flags`
+- 取代此文件所有符合的字串
+  `:%s/led/gold/g`
 
-如果你已經先有做搜尋了，那麼當你在取代的 ex command 是空白的時候，會用最後一次搜尋的內容做為要取代的對象
+- 將所有句子的句點，取代成句點與換行，達成分行的目的
+  `:%s/\. /\.\r/g`
+
+- 搜尋並刪除而不做替換
+  `:g/{text}/d`
+
+`[count]{operator}{search-commands}{text-objects}`做`operator`到第 count 個符合字串。
+
+從現在游標開始，刪除並修改到第二個的 const 位置 `2c/const`
+
+如果你已經先有做搜尋了，那麼當你在取代的 ex command 是空白的時候，會用最後一次搜尋的內容做為要取代的對象。(此範例會將所有符合 fun 字串都替換成 function)
 
 ```
 /fun
 :%s//function/gc
 ```
 
-此範例會將所有符合 fun 字串都替換成 function。
+#### global flags
 
-`:%s/\. /\.\r/g`
-此範例會將所有句子的句點，取代成句點與換行，查成分行的目的。
+[回到最上層](#Top-Content)
+
+- `:h 10.3`
+- `:h :s_flags`
+
+  global flags，還有其他 flags 可以一同搭配
+
+- i 忽略大小寫
+- c 每次取代前會做詢問
 
 # Vim’s Registers
 
 [回到最上層](#Top-Content)
 
-When we use commands like y, d, c and p we’re interacting with Vim’s unnamed register.
-"ayy yanks a line into the a register
-"add cuts a line into the a register
-"ap pastes from the a register
+`:h registers`
 
-" 為 unnamed register，所有複製和貼上的都會在這個暫存器
-yank register (0),
-named register a-z
-the cut registers (1-9)
-and the black hole register (\_).
-"0 暫存器不會受到 c,d 的影響
-經觀察，剪下暫存器為 "-
+## Vim Registers 基礎觀念
 
-:reg a b c d 只列出這些暫存器
+[回到最上層](#Top-Content)
 
-"ay{motion} copy to register a
-"Ay{motion} copy and append to register a
-"ap paste from register a
+**剪貼簿觀念釐清**
 
-:[range]delete [register]:[r]d [r] delete multiple lines into register
+在 linux 中有兩種剪貼簿(clipboard)，一種名為 selection clipboard，另外一種為 system clipboard。而在 Windows 中，沒有實際區分兩種剪貼簿，但 Vim 還是會顯示兩種剪貼簿的 register name。
 
-1.  /^#.\*<ENTER> to jump to the next header
-2.  "ayy to copy the header into the a register
-3.  n to jump to the next header
-4.  "Ayy to append the header to the contents of the a register
-5.  then n and "Ayy until you’ve gathered all the headers you want
-6.  "ap to paste the outline of the mardown document
-    markdown 神奇編輯法，
-    setp1 跳到標題，setp2 將該標題複製，setp3 去下一個標題，setp4 將這行標題複製到暫存器，setp5 同 4，step6 將所有標題都可以貼上了
+- selection clipboard ： 當你對視窗使用滑鼠選取字串時，該字串會被加入 selection clipboard。
+- system clipboard ： 當你複製字串時，就會加入此 system clipboard。(所以，如果你是選取字串後，在用 Ctrl-v 複製，那就會同時被加入兩個剪貼簿)
 
-<C-R> {register} 在 inseter mode 下可以將對應暫存器的內容貼上。
-[Paste an entire cut line at the end of another line in vim](https://superuser.com/questions/1125526/paste-an-entire-cut-line-at-the-end-of-another-line-in-vim)
-超好用，記得要在 insert mode 下使用
-如果要使用整行剪下，但剪取 newline，可以使用 `d$` or `D`
+**暫存器名稱觀念釐清** _registers_
+
+1. The unnamed register ""
+2. 10 numbered registers "0 to "9
+3. The small delete register "-
+4. 26 named registers "a to "z or "A to "Z
+5. Three read-only registers ":, "., "%
+6. Alternate buffer register "#
+7. The expression register "=
+8. The selection and drop registers "\*, "+ and "~
+9. Last search pattern register "/
+
+**列出各種好用的暫存器名稱**
+
+1. 未命名暫存器 `""`，不論是複製<ins>(yank)</ins>或是刪除<ins>(delete)</ins>，都會放到此暫存器，所以平常的`p`或`P`都是用此暫存器的。
+2. 數字暫存器`"0` 複製的資料會放在此暫存器。
+3. 剪下(`x`)的會放在`"-`暫存器。
+4. 數字暫存器`"1` ~ `"9`，刪除的資料會由 編號 1~9 遞增新增進去。
+5. 字母暫存器`"a` ~ `"z` `"A` ~ `"Z`可以將複製或刪除內容放到特定的暫存器。
+6. selection clipboard 會使用`"*`暫存器；system clipboard 會使用`"+`暫存器。
+7. 最後搜尋的字串會放在`"/`暫存器。
+8. 黑洞(black hole)暫存器`"_`，所有放入此暫存器內的資料都會消失。
+
+When we use commands like `y`, `d`, `c` and `p` we’re interacting with Vim’s unnamed register.
+
+※ 註記：VSCode vim 中經實測，沒有使用`"-`暫存器。
+
+**設定與安裝**
+
+在 Ubunt 與 Debian 中，如果要共用系統的剪貼簿需要作到下列幾項：
+
+1. vim 中設定`set clipboard=unnamedplu`
+2. 安裝 vim-gtk3，`$sudo apt install vim-gtk3`
+3. 確認成功有啟用成功 `$vim --version | grep clipboard`，如果變成`+clipboard`那就是啟用成功
+
+如果不想與系統剪貼簿共用，但又想將資料貼到系統剪貼簿，可以參考此[文章](http://littleqnote.blogspot.com/2013/09/vim-clipboard.html)
+
+## Register 使用方式
+
+[回到最上層](#Top-Content)
+
+`"{character}{operator}{motion}`
+
+e.g.
+
+```
+"ayy 將此行複製到a暫存器
+"Ay$ 將現在位置到行末附加貼上到暫存器a
+"ap 貼上暫存器a內的資料
+"add 將此行剪下貼上貼到暫存器a
+```
+
+- `:reg` 列出所有暫存器
+- `:reg a b c d` 只列出這些暫存器
+
+@@@ 從這裡繼續整理
+
+### 與暫存器相關使用範例
+
+`:[range]d[elete] [register]` : delete multiple lines into register
+
+**範例 1. 將 markdown 文件中所有標題都加入暫存器 a**
+
+[source](https://www.barbarianmeetscoding.com/blog/5-minutes-vim-copy-pasting-and-registers#vims-registers)
+
+1. `/^#.*<ENTER>` to jump to the next header
+2. `"ayy` to copy the header into the a register
+3. `n` to jump to the next header
+4. `"Ayy` to append the header to the contents of the a register
+5. then `n` and `"Ayy` until you’ve gathered all the headers you want
+6. `"ap` to paste the outline of the mardown document
+
+   ※ 大意就是把所有 markdown 的標題都加入 register a，完成取得所有標題
+
+**範例 2. 在 insert mode 中，貼上暫存器的內容**
+
+`<C-R> {register}` 在 inseter mode 下可以將對應暫存器的內容貼上。
 
 ## Vim clipboard
 
@@ -475,8 +617,8 @@ https://www.brianstorti.com/vim-registers/
 [回到最上層](#Top-Content)
 
 `a` , `A` , `i` , `I` , `<insert>` , `gI` , `gi` , `o` , `O`
-[ count ] o 使用 insert mode 模式，並將輸入後的字向下插入 N 行。
-[ count ] O 使用 insert mode 模式，並將輸入後的字向上插入 N 行。
+[count] o 使用 insert mode 模式，並將輸入後的字向下插入 N 行。
+[count] O 使用 insert mode 模式，並將輸入後的字向上插入 N 行。
 Ctrl-T indents
 Ctrl-D unindents
 `gi` sends you to the last place you left insert mode.
@@ -497,6 +639,8 @@ dd - delete current line
 
 d$ - delete to end of line
 d0 - delete to beginning of line
+
+yy5p 複製整行且貼上五次
 
 :1,.d
 delete to beginning of file
@@ -530,6 +674,19 @@ g~ switch case
 > < shift left
 > = format
 
+d15G 砍掉第 15 行
+[count]i{char} 在 normal mode 下，輸入完要重複的字元後，回到 normal mode，可以得到重複的字元。
+
+swap two characters? Type dlp (or xp).
+swap couple of lines? Type ddp.
+在 vimrc 中，我將 m-k m-j 作為上下搬移的 config
+want to swap a couple of paragraphs? Type dapp. 可以將兩段落互換
+
+:wa
+:qa
+:wqa
+:qa!
+
 # line-wise
 
 [回到最上層](#Top-Content)
@@ -544,7 +701,7 @@ gk , gj 無視 line-wise 直接上下幾行
 其他 line-wise 操作字符還有
 `-`, `+ or CTRL-M or \<CR>`, `_`, `{count}%`
 
-yy,Y,dd,cc is linewise
+yy,Y,dd,cc is linewise(我個人將 Y remap 成 y$，作為不是 linewise)
 D,C not linewise
 
     dd delete a line
@@ -554,6 +711,10 @@ D,C not linewise
     >> shift line right
     << shift lineleft
     == format line
+
+[Paste an entire cut line at the end of another line in vim](https://superuser.com/questions/1125526/paste-an-entire-cut-line-at-the-end-of-another-line-in-vim)
+超好用，記得要在 insert mode 下使用
+如果要使用整行剪下，但剪取 newline，可以使用 `d$` or `D`
 
 # Text-objects
 
@@ -755,6 +916,7 @@ Eventually though you’ll want to exit insert mode and do other stuff. There ar
 
 當你錄製完 marco，且跑過一次後，可以使用 `@@` 來進行重複，看起來更 ex command 的重複按鍵是相同的。
 
+`@:` or `@@` 可以使用最後的 ex commands
 在 vim 中可以 map marco，但是 vscode vim 好像不行。
 https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/reusable-editing-with-macros/
 
@@ -775,9 +937,6 @@ Vim comes with a built-in file explorer called netrw but you may want to check t
 
 [回到最上層](#Top-Content)
 
-w 到此單詞末尾，包括空白
-e 到此單詞末尾，不包括空白
-$從光標到行末
 insert mode Ctrl + C equal <ESC>
 ctrl + k v multiple insert
 normal U 回覆該行所有操作
@@ -787,10 +946,24 @@ normal number G 移動到該行行頭
 search mode / (search down) ? (search up)
 normal % toggle to brackets
 normal Q go to ex mode.
+gu - change to lowercase
+gU - change to uppercase
+guw - change word to lowercase
+guu - change line to lowercase
+gq - text formatting
+! - filter through an external program
+
+> G - Increase indendation till the end of the file
+> = - fix indentation
 
 Reformat the entire file: `ggvGgq`
 
 C-x C-o 內建的 Omni completion
+C-r 貼上暫存器資料
+C-k 使用快速建立符號
+C-v 貼上 Vim 顯示符號
+C-a 10 進位狀態下+1
+C-x 10 進位狀態下-1
 
 有需要去查如何取得 movement 次數的方式。這樣才可以 bind oo 的快捷鍵
 
@@ -840,6 +1013,13 @@ $ vim -O src/hello.js src/world.js
 # you can also use -o and -p
 $ vim -O src/*.js
 ```
+
+[source](https://www.barbarianmeetscoding.com/wiki/vim/#file-search)
+/{pattern} to search for a pattern
+Use CTRL-G and CTRL-T to jump to the next or previous match respectively without leaving the command-line mode
+
+[source](https://www.barbarianmeetscoding.com/wiki/vim/#substitute-replace-text-with-other-text)
+:[range]s[ubstitute]/{pattern}/{string}/[flags] [count]
 
 # 看不懂的
 
@@ -1122,6 +1302,11 @@ https://vimawesome.com/plugin/vim-colorschemes-sweeter-than-fiction
 - https://learnvimscriptthehardway.stevelosh.com/
 - https://www.mdeditor.tw/pl/2Jar/zh-tw
 - http://www.ruanyifeng.com/blog/2018/09/vimrc.html
+- https://qastack.cn/vi/444/how-do-i-reload-the-current-file
+  - autoread 相關規定說明
+
+此作者整理的十分詳細，可以認真看完
+https://www.barbarianmeetscoding.com/wiki/vim/
 
 [How to start Vim without any settings or plugins](https://codeyarns.com/tech/2014-05-20-how-to-start-vim-without-any-settings-or-plugins.html)
 
@@ -1217,7 +1402,91 @@ Bind { to w in operator pending mode makes y{ and d{ work like yw and dw respect
         }
     ]
 
-## vscode Multi-Cursor Mode
+## vscode plugin
+
+### 要準備的方向
+
+#### advanced-new-file
+
+有很多設定可以了解
+
+Fuzzy-matching autocomplete to create new file relative to existing path (thanks to JoeNg93 for making it faster)
+Create new directories while creating a new file
+Create a directory instead of a file by suffixing the file path with / as in somedirectory/ to create the directory (thanks to maximilianschmitt)
+Ignores gitignored and workspace files.exclude settings.
+Additional option of adding advancedNewFile.exclude settings to workspace settings just like native files.exlude except it explicitly effects AdvancedNewFile plugin only. (thanks to Kaffiend)
+Control the order of top convenient options ("last selection", "current file", etc) via config setting advancedNewFile.convenienceOptions
+
+#### auto-rename-tag
+
+預設是 \* 你也可以自己設定
+
+"auto-rename-tag.activationOnLanguage": ["html", "xml", "php", "javascript"]
+
+#### better-comments
+
+Alerts
+Queries
+TODOs
+Highlights
+各種不同顏色的提醒
+
+#### Bookmarks
+
+Bookmarks: Toggle Mark/unmark positions with bookmarks
+Bookmarks: Toggle Labeled Mark labeled bookmarks
+Bookmarks: Jump to Next Move the cursor forward, to the bookmark below
+Bookmarks: Jump to Previous Move the cursor backward, to the bookmark above
+Bookmarks: List List all bookmarks in the current file
+Bookmarks: List from All Files List all bookmarks from all files
+Bookmarks: Clear remove all bookmarks in the current file
+Bookmarks: Clear from All Files remove all bookmarks from all files
+Bookmarks (Selection): Select Lines Select all lines that contains bookmarks
+Bookmarks (Selection): Expand Selection to Next Expand the selected text to the next bookmark
+Bookmarks (Selection): Expand Selection to Previous Expand the selected text to the previous bookmark
+Bookmarks (Selection): Shrink Selection Shrink the select text to the Previous/Next bookmark
+
+#### DotENV
+
+#### EditorConfig for VS Code
+
+#### GitHub Pull Requests and Issues
+
+#### GitLens — Git supercharged
+
+#### Live Server
+
+#### Markdown All in One
+
+Keyboard shortcuts
+Table of contents
+List editing
+Print Markdown to HTML
+GitHub Flavored Markdown
+Math
+Auto completions
+Others
+Available Commands
+
+#### Markdown Preview Enhanced
+
+#### markdownlint
+
+#### open in browser
+
+#### Polacode
+
+#### Prettier - Code formatter
+
+#### Remote - SSH
+
+#### Settings Sync
+
+#### TODO Highlight
+
+#### Visual Studio IntelliCode
+
+## vscode vim Multi-Cursor Mode
 
 [回到最上層](#Top-Content)
 
@@ -1479,6 +1748,10 @@ Tab-completion of variables, functions, etc., is a common feature of editors, no
 
 vim 中，如果使用 `cib`,`ciB`會是()與{}
 而 surround 多了一個 `a` object-text
+
+因此
+C-o -> ysWa -> <C-o>
+ysipB -> 將此段落用{}括弧起來
 
 - a 代表 <>
 - b 代表 ()
