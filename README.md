@@ -14,9 +14,15 @@ The quick brown fox jumps over the lazy dog.
 # Top Content
 
 - [Top Content](#top-content)
+- [Insert-mode](#insert-mode)
+  - [insert mode operator](#insert-mode-operator)
+  - [insert mode 編輯檔案快捷鍵](#insert-mode-編輯檔案快捷鍵)
 - [Command-line-mode](#command-line-mode)
   - [符號意思](#符號意思)
   - [Ex-command mode](#ex-command-mode)
+- [Visual-mode](#visual-mode)
+  - [visual mode operator](#visual-mode-operator)
+- [模式切換](#模式切換)
 - [移動](#移動)
   - [畫面移動](#畫面移動)
   - [游標移動](#游標移動)
@@ -38,15 +44,12 @@ The quick brown fox jumps over the lazy dog.
   - [Register 使用方式](#register-使用方式)
     - [與暫存器相關使用範例](#與暫存器相關使用範例)
   - [Vim clipboard](#vim-clipboard)
-- [Insert mode](#insert-mode)
-  - [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
+    - [讓你的系統剪貼簿與 Vim 共用](#讓你的系統剪貼簿與-vim-共用)
+- [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
 - [line-wise](#line-wise)
 - [Text-objects](#text-objects)
 - [Help](#help)
 - [Vim keycode](#vim-keycode)
-- [inserting](#inserting)
-- [模式切換](#模式切換)
-- [Visual Mode](#visual-mode)
 - [marco](#marco)
 - [File navigating](#file-navigating)
 - [待分類](#待分類)
@@ -85,7 +88,7 @@ The quick brown fox jumps over the lazy dog.
       - [TODO Highlight](#todo-highlight)
       - [Visual Studio IntelliCode](#visual-studio-intellicode)
   - [vscode vim Multi-Cursor Mode](#vscode-vim-multi-cursor-mode)
-  - [vscode plugin](#vscode-plugin-1)
+  - [vscode vim plugin](#vscode-vim-plugin)
 - [Vim Plugin](#vim-plugin)
   - [vimawesome](#vimawesome)
   - [jedi-vim](#jedi-vim)
@@ -123,6 +126,33 @@ The quick brown fox jumps over the lazy dog.
   - [ctag](#ctag)
 - [License](#license)
 
+# Insert-mode
+
+[回到最上層](#Top-Content)
+
+`:h Insert Insert-mode`
+
+插入模式（Insert mode)是基本編輯的模式，在普通模式下（normal mode)可以透過下列方式進入插入模式。
+
+`i` , `I` , `a` , `A` ,`o` , `O` , `s` , `S` , `gi` , `gI` , `<insert>`
+
+## insert mode operator
+
+[回到最上層](#Top-Content)
+
+- [count]o 使用 insert mode 模式，並向下插入 N 行相同輸入後的字。
+- [count]O 使用 insert mode 模式，並向上插入 N 行相同輸入後的字。
+
+## insert mode 編輯檔案快捷鍵
+
+[回到最上層](#Top-Content)
+
+- CTRL-T 增加縮排(indents)
+- CTRL-D 減少縮排(unindents)
+- CTRL-H 向前刪除一個字元
+- CTRL-W 向前刪除一個單字
+- CTRL-U 向前刪除所有單字
+
 # Command-line-mode
 
 [回到最上層](#Top-Content)
@@ -134,7 +164,7 @@ The quick brown fox jumps over the lazy dog.
 **以下兩種寫法都可以**
 `:2,4 d c` or `:2,4d c`
 
-### 符號意思
+## 符號意思
 
 [回到最上層](#Top-Content)
 
@@ -160,6 +190,81 @@ The quick brown fox jumps over the lazy dog.
 
 如果使用`:i`進入連續 <ins> insert </ins> 的 ex mode，可以在新行數中輸入`.<CR>`或按下 `<C-c>` 離開
 
+# Visual-mode
+
+[回到最上層](#Top-Content)
+
+`:h Visual Visual-mode visual-mode`
+
+- `v` 進入以字元模式選取的視覺模式
+- `V` 進入以行模式選取的視覺模式
+- `<C-v>` 進入以區塊模式選取的視覺模式
+
+> - `v` for visual mode character-wise. When you move around you go selecting character by character
+> - `V` for visual mode line-wise. When you move around you go selecting line by line
+> - `<C-V>` for visual mode block-wise. When you move around yo go selecting rectangular blocks of text
+>   [source](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/selecting-text/)
+
+## visual mode operator
+
+[回到最上層](#Top-Content)
+
+以視覺模式選取
+
+- viw
+- v2e
+- 在 visual mode 下，可以使用`o` or `O` 去切換你的游標位置。
+
+# 模式切換
+
+[回到最上層](#Top-Content)
+
+可以在不同模式之間快速切換，普遍來說，都是切換為 _**普通模式**_ ，普通模式再切換成其他模式。
+
+- 普通模式 -> 視覺模式
+
+  - `v` , `<S-v>` , `<C-v>`
+
+- 視覺模式 -> 普通模式
+
+  - (`v` or `<S-v>` or `<C-v>` ) ,`<ESC>`,`<C-c>`,`<C-[>`
+
+- 普通模式 -> 插入模式
+
+  - `i` , `I` , `a` , `A` ,`o` , `O` , `s` , `S` , `gi` , `gI` , `<insert>`
+
+- 插入模式 -> 普通模式
+
+  - `<ESC>` , `<C-c>` , `<C-[>`, 自己設定 map`<ESC>`
+
+- 命令列模式 -> 普通模式
+
+  - `<ESC>` , `<C-c>` , `<C-[>` , 自己設定 map`<ESC>`
+
+- 普通模式 -> 取代模式
+
+  - `R`
+
+- 取代模式 -> Ex 模式
+
+  - `<ESC>` , `<C-c>` , `<C-[>` , 自己設定 map`<ESC>`
+
+- 普通模式 -> Ex 模式
+
+  - `Q` , `gQ`
+
+- Ex 模式 -> 普通模式
+
+  - `:vi` , `:visua`
+
+- 普通模式 -> 連續 insert Ex 模式
+
+  - `:i`
+
+- 連續 insert Ex 模式 -> 普通模式
+
+  - 空白行中輸入`.<CR>` , `<C-c>`
+
 # 移動
 
 [回到最上層](#Top-Content)
@@ -180,13 +285,11 @@ The quick brown fox jumps over the lazy dog.
 - `zz` 將該前行放在螢幕中間。可使用`[count]zz`
 - `zb` 將該前行放在螢幕最下方
 
-VSCode vim keymap 沒有實做`[count]zz`
-
 **Scrolling downwards/upwards** _scroll-down / scroll-up_
 
-- `ctrl-f` / `ctrl-b` 向下/向上翻一頁(forward, backward)
-- `ctrl-d` / `ctrl-u` 向下/向上翻半頁(down, up)
-- `ctrl-e` / `ctrl-y` 向下/向上移動一行
+- `CTRL-F` / `CTRL-B` 向下/向上翻一頁(forward, backward)
+- `CTRL-D` / `CTRL-U` 向下/向上翻半頁(down, up)
+- `CTRL-E` / `CTRL-Y` 向下/向上移動一行
 
 ## 游標移動
 
@@ -293,8 +396,8 @@ CTRL-O Go to [count] older cursor position in jump list (not a motion command).
 CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 ```
 
-`^]` 同 `C-]`jump to tag under cursor，會跑到下一個有 tag 的地方
-你可以在 Vim 文件中，在特定有 tag 標籤的文字上，透過 `C-]` 會幫你跳轉到該頁面。若要跳回原處需要 `<C-o>`
+`^]` 同 `<C-]>`jump to tag under cursor，會跑到下一個有 tag 的地方
+你可以在 Vim 文件中，在特定有 tag 標籤的文字上，透過 `<C-]>` 會幫你跳轉到該頁面。若要跳回原處需要 `<C-o>`
 
 > You can either search for any of these terms (e.g. /mappings, /commands, /configuration) or look at the documentation table of contents, find what you want and then with the cursor on top of a link (highlighted bits of text on the right) type C-] to be transported to that section of the documentation.
 > [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-plugins-a-methodology-to-become-1-percent-better-every-week#configuring-plugins)
@@ -312,16 +415,15 @@ CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 
 [回到最上層](#Top-Content)
 
-- `[count]u` undo <br>
-- `[count]ctrl-r` redo <br>
-- `U` 整行恢復 <br>
+- `[count]u` undo
+- `[count]ctrl-r` redo
+- `U` 整行恢復
 - `[count].` 重複最後一次做的動作幾次(可配合`n`, `N`, `,`, `;` 一起使用，會出其的好用)
 - `~` 改變目前游標字母大小寫
 - `g~{motion}` 改變到{motion}之間的字母大小寫
 - `g~~` 改變整行字母大小寫
 - `>>` 增加縮排
 - `<<` 減少縮排
-
 - `p` 在游標後，貼上暫存器內容
 - `P` 在游標前，貼上後暫存器內容
 - `yy` 整行複製至 `0` register
@@ -356,6 +458,7 @@ e.g.
 ```
 :ab hi hi comman user
 :ab osf Open Software Foundation
+:ab fsf Free Software Foundation
 :ab thsi this
 :iab f function(){}<Left><Left><Left>
 ```
@@ -435,10 +538,11 @@ N 向上一個移動到符合搜尋條件字串
 `:h /ignorecase`
 
 / or ? search can use sensitive/insensitive search
+
 [How to do case insensitive search in Vim](https://stackoverflow.com/questions/2287440/how-to-do-case-insensitive-search-in-vim)
 
-`/hi\c` or `/\chi` (sensitive) 這樣就會忽略大小寫 e.g. hi, Hi, HI , hI that's ok
-`/hi\C` or `/\Chi` (insensitive) 限定大小寫
+- `/hi\c` or `/\chi` (sensitive) 這樣就會忽略大小寫 e.g. hi, Hi, HI , hI that's ok
+- `/hi\C` or `/\Chi` (insensitive) 限定大小寫
 
 ## 搜尋與取代之 ex command 範例
 
@@ -471,12 +575,12 @@ Substituting Text
 
 如果你已經先有做搜尋了，那麼當你在取代的 ex command 是空白的時候，會用最後一次搜尋的內容做為要取代的對象。(此範例會將所有符合 fun 字串都替換成 function)
 
-```
+```text
 /fun
 :%s//function/gc
 ```
 
-#### global flags
+### global flags
 
 [回到最上層](#Top-Content)
 
@@ -485,8 +589,8 @@ Substituting Text
 
   global flags，還有其他 flags 可以一同搭配
 
-- i 忽略大小寫
-- c 每次取代前會做詢問
+- `i` 忽略大小寫
+- `c` 每次取代前會做詢問
 
 # Vim’s Registers
 
@@ -503,7 +607,7 @@ Substituting Text
 在 linux 中有兩種剪貼簿(clipboard)，一種名為 selection clipboard，另外一種為 system clipboard。而在 Windows 中，沒有實際區分兩種剪貼簿，但 Vim 還是會顯示兩種剪貼簿的 register name。
 
 - selection clipboard ： 當你對視窗使用滑鼠選取字串時，該字串會被加入 selection clipboard。
-- system clipboard ： 當你複製字串時，就會加入此 system clipboard。(所以，如果你是選取字串後，在用 Ctrl-v 複製，那就會同時被加入兩個剪貼簿)
+- system clipboard ： 當你複製字串時，就會加入此 system clipboard。(所以，如果你是選取字串後，在用 CTRL-V 複製，那就會同時被加入兩個剪貼簿)
 
 **暫存器名稱觀念釐清** _registers_
 
@@ -532,16 +636,6 @@ When we use commands like `y`, `d`, `c` and `p` we’re interacting with Vim’s
 
 ※ 註記：VSCode vim 中經實測，沒有使用`"-`暫存器。
 
-**設定與安裝**
-
-在 Ubunt 與 Debian 中，如果要共用系統的剪貼簿需要作到下列幾項：
-
-1. vim 中設定`set clipboard=unnamedplu`
-2. 安裝 vim-gtk3，`$sudo apt install vim-gtk3`
-3. 確認成功有啟用成功 `$vim --version | grep clipboard`，如果變成`+clipboard`那就是啟用成功
-
-如果不想與系統剪貼簿共用，但又想將資料貼到系統剪貼簿，可以參考此[文章](http://littleqnote.blogspot.com/2013/09/vim-clipboard.html)
-
 ## Register 使用方式
 
 [回到最上層](#Top-Content)
@@ -560,8 +654,6 @@ e.g.
 - `:reg` 列出所有暫存器
 - `:reg a b c d` 只列出這些暫存器
 
-@@@ 從這裡繼續整理
-
 ### 與暫存器相關使用範例
 
 `:[range]d[elete] [register]` : delete multiple lines into register
@@ -577,53 +669,62 @@ e.g.
 5. then `n` and `"Ayy` until you’ve gathered all the headers you want
 6. `"ap` to paste the outline of the mardown document
 
-   ※ 大意就是把所有 markdown 的標題都加入 register a，完成取得所有標題
+   ※ 大意就是把所有 markdown 的標題都加入 register `a`，完成取得所有標題
 
 **範例 2. 在 insert mode 中，貼上暫存器的內容**
 
-`<C-R> {register}` 在 inseter mode 下可以將對應暫存器的內容貼上。
+`<C-R> {register}` 在 insert mode 下可以將對應暫存器的內容貼上。
 
 ## Vim clipboard
 
 [回到最上層](#Top-Content)
 
-目的：讓你的系統剪貼簿與 Vim 共用
+`:h clipboard`
 
-檢查：
-how to check your clipboard ?
-`$vim --version` <br>
-or <br>
-`:vim has('clipboard')` return 1 有該模組，return 0 無該模組。
-確認是否有 `+clipboard` 預設通常是沒有的，如果你是 Ubuntu & Debian，你需要安裝`vim-gtk3` (已驗證)
-如果你是 linux，那麼你會有兩種暫存器 `"*`與`"+`，如果是 Windows、Mac OS，那麼你的`"*`、`"+` 是相同的。
-一種是 PRIMARY，當你選取字串後，可以直接使用滑鼠中鍵單擊貼上。
-另一種是我們熟悉的剪貼簿，就是^C、^V 那種。
+### 讓你的系統剪貼簿與 Vim 共用
+
+[回到最上層](#Top-Content)
+
+**設定與安裝**
+
+在 Ubunt 與 Debian 中，如果要共用系統的剪貼簿需要作到下列幾項：
+
+1. vim 中設定`set clipboard=unnamedplus`
+2. 安裝 vim-gtk3，`$sudo apt install vim-gtk3`
+3. 確認成功有啟用成功
+   1. 方法 1 : `$vim --version | grep clipboard`，如果變成`+clipboard`那就是啟用成功
+   2. 方法 2 ： `:echo has('clipboard')`，如果得到`1`代表已成功，`0`代表無該模組
+
+※ 註記：
+
+- `set clipboard=unnamed` 設定 PRIMARY 剪貼簿
+- `set clipboard=unnamedplus` 設定 PRIMARY 剪貼簿與我們熟悉的剪貼簿
+
+**其他相關資訊**
+
+如果不想與系統剪貼簿共用，但又想將資料貼到系統剪貼簿，可以參考此[文章](http://littleqnote.blogspot.com/2013/09/vim-clipboard.html)
+
+如果你是 linux(x11 情況下)，那麼你會有兩種暫存器 `"*`與`"+`，如果是 Windows、Mac OS，那麼你的`"*`、`"+` 是相同的。
+
+一種是 PRIMARY(selections)，當你選取字串後，可以直接使用滑鼠 _**中鍵**_ 單擊貼上。 另一種是我們熟悉的剪貼簿，就是`^C`、`^V` 那種。
 
 - PRIMARY - This is copy-on-select, and can be pasted with the middle mouse button.
 - CLIPBOARD - This is copied with (usually) ^C, and pasted with ^V (It's like MS Windows).
 
-設定方式：
-`set clipboard=unnamed` 設定 PRIMARY 剪貼簿
-`set clipboard=unnamedplus` 設定 PRIMARY 剪貼簿與我們熟悉的剪貼簿
-這裡要注意的是，用此設定後，你所 dd, yy 的值，會覆蓋到 "+,"\*, "-or"0 暫存器，感覺有點奇怪，照理來說你 dd 的並不會影響到系統的暫存器，需要花時間研究。可能要上網求問
-https://www.brianstorti.com/vim-registers/
+詳情可參考`:h gui-selections`
+
+其他 registers 可以參考[Vim Registers 基礎觀念](#vim-registers-基礎觀念)
+
+推薦額外閱讀文章：[Vim registers: The basics and beyond](https://www.brianstorti.com/vim-registers/)
 
 貼上只需要使用對應暫存器即可
-`"*` : "\*p
-`"+` : "+p
 
-# Insert mode
+- `"*p` 貼上 primary selection
+- `"+p` 貼上 system clipboard
 
-[回到最上層](#Top-Content)
+@@@ 從這裡繼續整理
 
-`a` , `A` , `i` , `I` , `<insert>` , `gI` , `gi` , `o` , `O`
-[count] o 使用 insert mode 模式，並將輸入後的字向下插入 N 行。
-[count] O 使用 insert mode 模式，並將輸入後的字向上插入 N 行。
-Ctrl-T indents
-Ctrl-D unindents
-`gi` sends you to the last place you left insert mode.
-
-## Editing Like Magic With Vim Operators
+# Editing Like Magic With Vim Operators
 
 [回到最上層](#Top-Content)
 
@@ -821,7 +922,7 @@ The way that you specify a text object within a command is by combining the lett
 [回到最上層](#Top-Content)
 
 `:h` 後
-輸入你想知道的指令，如果不確定，可以使用 Tab 或 Ctrl-D 來補齊或者顯示清單。
+輸入你想知道的指令，如果不確定，可以使用 Tab 或 CTRL-D 來補齊或者顯示清單。
 
 `:h index.txt`
 許多詳細的教學就是在這上面
@@ -871,44 +972,6 @@ https://vi.stackexchange.com/questions/8856/mapping-ctrl-with-equal-sign <br>
 Most of these, however, already have a function in Vim (and some are
 aliases of other keys: Ctrl-H and Bsp, Ctrl-I and Tab, Ctrl-M and Enter,
 Ctrl-[ and Esc, Ctrl-? and Del).
-
-# inserting
-
-[回到最上層](#Top-Content)
-
-`i`, `I`, `a`, `A`, `o`, `O`, `s`, `S`, `gi`
-`gi` gi puts you into insert mode at the last place you left insert mode. This is great if you drop of insert mode by mistake and want to go back where you were and continue typing.
-
-    C-h lets you delete the last character you typed
-    C-w lets you delete the last word you typed
-    C-u lets you delete the last line you typed
-
-Eventually though you’ll want to exit insert mode and do other stuff. There are three ways to do it: <ESC>, C-[ and C-C. Of all of this, the easier to type is C-C. ctrl c to exit
-
-# 模式切換
-
-[回到最上層](#Top-Content)
-
-    Esc 或 Ctrl[ = 回到命令模式，ESC是獨立一顆比較好按，但比較遠，如果你不想讓你的手離開打字區的話，可以選用CTRL [，或是在~/.vimrc裡自訂快速鍵
-    Ctrlv = visual block模式，可進行像TextMate按住alt鍵的區塊選取
-
-# Visual Mode
-
-[回到最上層](#Top-Content)
-
-    v for visual mode character-wise. When you move around you go selecting character by character
-    V for visual mode line-wise. When you move around you go selecting line by line
-    <C-V> for visual mode block-wise. When you move around yo go selecting rectangular blocks of text
-
-    viw
-    v2e
-
-
-    v for visual mode character-wise. When you move around you go selecting character by character
-    V for visual mode line-wise. When you move around you go selecting line by line
-    <C-V> for visual mode block-wise. When you move around yo go selecting rectangular blocks of text
-
-在 visual mode 下，可以使用`o` or `O` 去切換你的游標位置。
 
 # marco
 
@@ -1402,6 +1465,12 @@ Bind { to w in operator pending mode makes y{ and d{ work like yw and dw respect
         }
     ]
 
+VSCode vim keymap 沒有實做`[count]zz`
+
+vscode vim keymap 中，visual mode 可以使用`o`切換位置，但`O`切換位置沒有實做
+
+vscode vim keymap 沒有完整實做`gi`，如果最後 insert 的地方沒有修改，那麼 gi 就不會過去
+
 ## vscode plugin
 
 ### 要準備的方向
@@ -1498,7 +1567,7 @@ Normal `gh` 等同於你把滑鼠放在該字上方，十分的好用!!!
 
 Visual `af` 可以讓你在括號內選取所有字（含括號） （blocks of text），緊限大中小括號`{[()]}`
 
-## vscode plugin
+## vscode vim plugin
 
 [回到最上層](#Top-Content)
 
