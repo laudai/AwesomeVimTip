@@ -43,10 +43,12 @@ The quick brown fox jumps over the lazy dog.
   - [Vim Registers 基礎觀念](#vim-registers-基礎觀念)
   - [Register 使用方式](#register-使用方式)
     - [與暫存器相關使用範例](#與暫存器相關使用範例)
-  - [Vim clipboard](#vim-clipboard)
-    - [讓你的系統剪貼簿與 Vim 共用](#讓你的系統剪貼簿與-vim-共用)
-- [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
-- [line-wise](#line-wise)
+- [Vim’clipboard](#vimclipboard)
+  - [讓你的系統剪貼簿與 Vim 共用](#讓你的系統剪貼簿與-vim-共用)
+- [Operators](#operators)
+  - [Editing Like Magic With Vim Operators](#editing-like-magic-with-vim-operators)
+  - [很像 operators 但並不是 operators](#很像-operators-但並不是-operators)
+- [linewise](#linewise)
 - [Text-objects](#text-objects)
 - [Help](#help)
 - [Vim keycode](#vim-keycode)
@@ -176,6 +178,8 @@ The quick brown fox jumps over the lazy dog.
 - `:5 -2 d` 代表移動到第五行，再向上移動兩行，將該行刪除
 - `:5,-2 d` 代表移動到第五行，並將該行到-2 行內的資料全數刪除
 - `:.,3 d` 代表當前行到第 3 行之間的資料都刪除 (可以正向選取或反向選取)
+- `:1,.d` 從文件第一行刪除到現在行。如`dgg`
+- `:.,$d` 從文件現在行行刪除到文末。如`dG`
 
 個人認為 `:.,+2 {operator}` `:.,5 {operator}` 這種方式比較好理解
 
@@ -560,6 +564,9 @@ Substituting Text
 - 取代該行所有符合的字串
   `:s/led/gold/g`
 
+- 取代此行到文末所有符合的字串
+  `:.,$s/led/gold/g`
+
 - 取代此文件所有符合的字串
   `:%s/led/gold/g`
 
@@ -568,6 +575,9 @@ Substituting Text
 
 - 搜尋並刪除而不做替換
   `:g/{text}/d`
+
+- 從現在行到 774 行，將 delete 取代成 deletes，每次取代前都詢問
+  `:.,774/delete/deletes/gc`
 
 `[count]{operator}{search-commands}{text-objects}`做`operator`到第 count 個符合字串。
 
@@ -634,8 +644,6 @@ Substituting Text
 
 When we use commands like `y`, `d`, `c` and `p` we’re interacting with Vim’s unnamed register.
 
-※ 註記：VSCode vim 中經實測，沒有使用`"-`暫存器。
-
 ## Register 使用方式
 
 [回到最上層](#Top-Content)
@@ -644,7 +652,7 @@ When we use commands like `y`, `d`, `c` and `p` we’re interacting with Vim’s
 
 e.g.
 
-```
+```text
 "ayy 將此行複製到a暫存器
 "Ay$ 將現在位置到行末附加貼上到暫存器a
 "ap 貼上暫存器a內的資料
@@ -675,13 +683,13 @@ e.g.
 
 `<C-R> {register}` 在 insert mode 下可以將對應暫存器的內容貼上。
 
-## Vim clipboard
+# Vim’clipboard
 
 [回到最上層](#Top-Content)
 
 `:h clipboard`
 
-### 讓你的系統剪貼簿與 Vim 共用
+## 讓你的系統剪貼簿與 Vim 共用
 
 [回到最上層](#Top-Content)
 
@@ -722,100 +730,120 @@ e.g.
 - `"*p` 貼上 primary selection
 - `"+p` 貼上 system clipboard
 
-@@@ 從這裡繼續整理
-
-# Editing Like Magic With Vim Operators
+# Operators
 
 [回到最上層](#Top-Content)
 
 `:h operator`
-operator : an action to perform: delete, change, yank, etc
-count : a multiplier to "perform an action {count} times"
-motion : a motion that represents a piece of text to which to appy the action defined by the operator
-x - delete current character
-10x
-dw - delete current word
-dd - delete current line
-5dd - delete five lines
 
-d$ - delete to end of line
-d0 - delete to beginning of line
+`operator` 一般常用的就是 delete, change, yank, swap case 等操作符。可以搭配 `count` 一同使用，最後再使用 `motion` 決定要抵達的位置。
 
-yy5p 複製整行且貼上五次
+常見的 operator 有：
 
-:1,.d
-delete to beginning of file
-like dgg
+- `c` : change
+- `d` : delete
+- `y` : yank
+- `~` : swap case
+- `g~` : swap case
+- `gu` : make lowerecase
+- `gU` : make uppercase
+- `>` : shift right
+- `<` : shift left
+- `=` : filter through 'equalprg' or C-indenting if empty
+- `zf` : define a fold
 
-:.,$d
-delete to end of file
-like dG
-:.,$s/foo/bar/g
-取代從此行到文末的字串
-
-d/hello deletes everything until the first occurrence of hello
-c/hello deletes everything until the first occurrence of hello and change to insert mode
-ggdG deletes a complete document
-
-    c change. This is the most useful operator. It deletes and sends you into insert mode so that you can type
-    d delete
-    y yank or copy in Vim jargon
-    p put or paste in Vim jargon
-    g~ to toggle caps
-
-The way that you specify a text object within a command is by combining the letter a (which represents the text object plus whitespace) or i (inner object without whitespace) with a character that represents a text object itself: w for word, s for sentence, ' " for quotes, p for paragraph, b for block surrounded by (, Bfor block surrounded by { and t for tag. So to delete different bits of text you could:
-
-d delete
-c change
-y yank (copy)
-p p (paste)
-g~ switch case
-
-> shift right
-> < shift left
-> = format
-
-d15G 砍掉第 15 行
-[count]i{char} 在 normal mode 下，輸入完要重複的字元後，回到 normal mode，可以得到重複的字元。
-
-swap two characters? Type dlp (or xp).
-swap couple of lines? Type ddp.
-在 vimrc 中，我將 m-k m-j 作為上下搬移的 config
-want to swap a couple of paragraphs? Type dapp. 可以將兩段落互換
-
-:wa
-:qa
-:wqa
-:qa!
-
-# line-wise
+## Editing Like Magic With Vim Operators
 
 [回到最上層](#Top-Content)
 
-k, UP, CTRL-P 上去幾行 line-wise
+`[count]{operator}{motion}`
 
-j,DOWN, CTRL-J, \<NL>, CTRL-n 下去幾行 line-wise
-gk , gj 無視 line-wise 直接上下幾行
+- `dw` : deletes until next `w` motion
+- `de` : deletes until next `e` motion
+- `dd` : deletes current line
+- `5dd`: deletes five lines
+- `d$` : deletes to end of line
+- `d0` : deletes to beginning of line
+- `dg_` : deletes to end of line(non-blank character)
+- `d^` : deletes to beginning of line(non-blank character)
+- `dgg` : deletes everything to beginning of file
+- `dG` : deletes everything to end of file
+- `d15G` : delete 15th line in file
+- `daw` : delete a word
+- `dit` : delete anything in inner tag
+- `yy5p` : copy current line and paste five times
+- `d/hello` : deletes everything until the first occurence of hello
+- `c/hello` : deletes everything until the first occurence of hello, and change to insert mode
+- `3d/hello` : deletes everything until the third occurence of hello
+- `ggdG` : deletes a complete document
+- `gg=G` : autoformat C-indenting
+- `dlp` or `xp` : swap two characters
+- `ddp` : swap couple line
+- `dapp` : swap a couple of pargraphs
 
-\<NL> 就是 CTRL-J 與 CTRL-M \<CR>不同
+## 很像 operators 但並不是 operators
 
-其他 line-wise 操作字符還有
-`-`, `+ or CTRL-M or \<CR>`, `_`, `{count}%`
+[回到最上層](#Top-Content)
 
-yy,Y,dd,cc is linewise(我個人將 Y remap 成 y$，作為不是 linewise)
-D,C not linewise
+- `y` : yank or copy in Vim jargon
+- `p` : put or paste in Vim jargon
+- `x`: Does the same as "dl"，為`<DEL>`key，但差別在於可以`[count]x`而不能`[count]<DEL>`
+- `X`: Does the same as "dh"
+- `s`: Synoym for "cl".(not linewise)
+- `S`: Synoym for "cc".(linewise)
 
-    dd delete a line
-    cc change a line
-    yy yank (copy) a line
-    g~~ switch case of a line
-    >> shift line right
-    << shift lineleft
-    == format line
+e.g.
+
+```text
+10x 向右刪除10個字元
+```
+
+# linewise
+
+[回到最上層](#Top-Content)
+
+`:h linewise characterwise`
+
+在[移動](#移動)的頁面中，並沒有特定說明此內容，但其實在移動過程中有分 linewise 與非 linewise 這兩種。
+
+- linewise 是以整行做更動的。例如以實際行數上下移動、整行複製,刪除等。
+
+- 非 linewise 並不是以整行做更動。例如在同一行內有被`set wrap`做分行，如果要在此行做移動，就是屬於非 linewise，或者複製,刪除此行到底，貼上後就不是整行貼上,刪除。
+
+**linewise 移動**
+
+`[count]{motion}`
+
+- `k`, `<UP>`, `CTRL-P` 上去幾行 linewise。
+- `-` 上去幾行到第一個字為 non-blank 的 linewise 行數。
+- `j`, `<DOWN>`, `CTRL-J`, `<NL>`, `CTRL-N` 下去幾行 linewise。
+- `+`, `CTRL-M`, `<CR>` 下去幾行到第一個字為 non-blank 的 linewise 行數。
+- `_`, `<underscore>` 下去單一行（若無 count 則為此行）到第一個字為 non-blank 的 linewise。
+- `gg` 去到第 N 行的 non-blank 開頭行數，若無設定行數，預設是到此文件第一行。
+- `G` 去到第 N 行的 non-blank 開頭行數，若無設定行數，預設是到此文件最後一行。
+- `%` 到此文件的第 N％ non-blank 開頭行數。
+
+※註記 `<NL>` 就是 `CTRL-J` 與 `CTRL-M`, `<CR>`不同
+
+**not linewise 移動**
+
+- `gk`, `g<Up>` exclusive motion，可進行 linewise 或 not linewise 向上移動。
+- `gj`, `g<Down>` exclusive motion，可進行 linewise 或 not linewise 向下移動。
+
+**linewise / not linewise command**
+
+- `yy`, `Y`, `dd`, `cc` 是 linewise
+- `D`, `C` 是 not linewise(我個人將 Y remap 成 y$，作為不是 linewise)
+
+**綜合使用範例：** 想要將整行內容剪下，卻不想以 linewise 貼上
 
 [Paste an entire cut line at the end of another line in vim](https://superuser.com/questions/1125526/paste-an-entire-cut-line-at-the-end-of-another-line-in-vim)
-超好用，記得要在 insert mode 下使用
-如果要使用整行剪下，但剪取 newline，可以使用 `d$` or `D`
+
+```text
+剪下時使用 d$, D，貼上時可以切換到 insert mode 然後使用 <C-R> "快速貼上剪下的內容。
+```
+
+@@@ 從這裡繼續整理
 
 # Text-objects
 
@@ -859,6 +887,16 @@ B (or {, }) for block surrounded by {}
 <, > for a block surrounded by <>
 [, ] for a block surrounded by []
 t for tag.
+
+- `a` 一整個 text-object 加上空白
+- `i` 內部 text-object 不包含空白
+- `w` 一整個字
+- `s` 一整句句子
+- `' "` quotes 引號
+- `p` paragraph 段落
+- `b` ()
+- `B` {}
+- `t` tag html
 
 diw delete in word
 caw change all word
@@ -1116,6 +1154,13 @@ Setting the search to be case insensitive in Vim
     :set ignorecase #equal set ic
     :set noignorecase #equal sest noic
     :set smartcase #待研究
+
+map <ESC>j <M-j>
+map <ESC>k <M-k>
+nn <M-j> :.m+1<CR>
+nn <M-k> :.m-2<CR>
+alt+j 移動到下行
+alt+k 移動到上行
 
 set compatible " enable option
 set nocompatible " prepend 'no' to disable the option
@@ -1413,6 +1458,8 @@ The nitty gritty of packages and different types of plugins is out of the scope 
 
 [如何在 Linux 下利用 Vim 搭建 C/C++ 开发环境?](https://www.zhihu.com/question/47691414)
 2018 年的 Vim 搭建教學文，使用 Vim8
+
+[ Commenting with opfunc ](https://vim.fandom.com/wiki/Commenting_with_opfunc)
 
 # VScode Vim Keymap 特殊用法
 
