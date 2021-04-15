@@ -51,7 +51,8 @@ The quick brown fox jumps over the lazy dog.
 - [linewise](#linewise)
 - [Text-objects](#text-objects)
 - [Help](#help)
-- [Vim keycode](#vim-keycode)
+- [Vim keycodes](#vim-keycodes)
+  - [fast keycodes](#fast-keycodes)
 - [marco](#marco)
 - [File navigating](#file-navigating)
 - [待分類](#待分類)
@@ -180,6 +181,11 @@ The quick brown fox jumps over the lazy dog.
 - `:.,3 d` 代表當前行到第 3 行之間的資料都刪除 (可以正向選取或反向選取)
 - `:1,.d` 從文件第一行刪除到現在行。如`dgg`
 - `:.,$d` 從文件現在行行刪除到文末。如`dG`
+- `:#,# w FINENAME` 將＃到＃行數內的資內容儲存到 FILENAME 當中。
+- `:r FILENAME` 將 FILENAME 檔案內容寫入目前游標位置
+- `:read $VIMRUNTIME/vimrc_example.vim` 將 vimrc 範例檔讀取進來
+- `:w` 儲存該檔案或在後面加入新檔名另存新檔
+- `:sav` 另存新檔
 
 個人認為 `:.,+2 {operator}` `:.,5 {operator}` 這種方式比較好理解
 
@@ -430,6 +436,10 @@ CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 - `<<` 減少縮排
 - `p` 在游標後，貼上暫存器內容
 - `P` 在游標前，貼上後暫存器內容
+- `dd` 整行刪除
+- `D` 刪除至行末
+- `cc` 整行刪除，並進入插入模式
+- `C` 刪除至行末，並進入插入模式
 - `yy` 整行複製至 `0` register
 - `Y` 整行複製至 `0` register
 - `gp` 在游標後，貼上暫存器內容，貼上後游標向後移動到新的字元 (可使用 linewise 做測試)
@@ -442,6 +452,8 @@ e.g.
 :1,5 m +4
 :.m+2
 ```
+
+※ 註記：關於`cc`,`dd`,`yy`,`C`,`D`,`Y` 有 linewise 相關差異，詳情可看[linewise](#linewise)章節
 
 ## ab, abbreviations, 縮寫
 
@@ -566,6 +578,9 @@ Substituting Text
 
 - 取代此行到文末所有符合的字串
   `:.,$s/led/gold/g`
+
+- 取代此行號範圍內所有符合的字串
+  `:#,#s/led/gold/g`
 
 - 取代此文件所有符合的字串
   `:%s/led/gold/g`
@@ -758,6 +773,7 @@ e.g.
 
 `[count]{operator}{motion}`
 
+- `yl` : yanks a letter
 - `dw` : deletes until next `w` motion
 - `de` : deletes until next `e` motion
 - `dd` : deletes current line
@@ -768,10 +784,13 @@ e.g.
 - `d^` : deletes to beginning of line(non-blank character)
 - `dgg` : deletes everything to beginning of file
 - `dG` : deletes everything to end of file
+- `df'` : delete find '
+- `dF'` : delete backforward find '
+- `dt'` : delete until '
+- `dT'` : delete backforward until '
 - `d15G` : delete 15th line in file
-- `daw` : delete a word
-- `dit` : delete anything in inner tag
 - `yy5p` : copy current line and paste five times
+- `3de` or `d3e` delete 3 times to words end
 - `d/hello` : deletes everything until the first occurence of hello
 - `c/hello` : deletes everything until the first occurence of hello, and change to insert mode
 - `3d/hello` : deletes everything until the third occurence of hello
@@ -823,7 +842,7 @@ e.g.
 - `G` 去到第 N 行的 non-blank 開頭行數，若無設定行數，預設是到此文件最後一行。
 - `%` 到此文件的第 N％ non-blank 開頭行數。
 
-※註記 `<NL>` 就是 `CTRL-J` 與 `CTRL-M`, `<CR>`不同
+※註記 : `<NL>` 就是 `CTRL-J` 與 `CTRL-M`, `<CR>`不同
 
 **not linewise 移動**
 
@@ -843,50 +862,15 @@ e.g.
 剪下時使用 d$, D，貼上時可以切換到 insert mode 然後使用 <C-R> "快速貼上剪下的內容。
 ```
 
-@@@ 從這裡繼續整理
-
 # Text-objects
 
 [回到最上層](#Top-Content)
 
-詳細的章節可以看
-`:h text-objects`
-daw to delete a word (plus trailing whitespace)
-ciw to change inner word
-das to delete a sentence (dis delete inner sentence)
-da" to delete something in double quotes including the quotes
-ci" to change something inside double quotes
-dap to delete a paragraph
-dab da( or da) to delete a block surrounded by (
-daB da{ or da} to delete a block surrounded by {
-dat to delete an HTML tag
-cit to change the contents of an HTML tag
+`:h object-select text-objects`
 
-    yl yanks a letter,
-    yaw yanks a word,
-    yas yanks a sentence
-    yi( yanks everything within ( and so on…
+此系列只能在 operator 後或者視覺模式下使用，並不能單獨使用。
 
-Again, as usual U is a stronger version of u and undoes all changes made to the last line that you changed.
-
-dt' delete until '
-df' delete find '
-dT' delete backforward until '
-dF' delete backforward find '
-
-    dd,cc Double an operator to make it operate on a whole line: dd deletes a whole like, cc changes a whole line, etc.
-    C,D Capitalize an operator to make it operate from the cursor to the end of a line: D deletes from the cursor to the end of the line, C changes to the end of a line, etc.
-
-The built-in text-objects.
-w for word
-s for sentence
-', ", ` for quotes
-p for paragraph
-b (or (, )) for block surrounded by (),
-B (or {, }) for block surrounded by {}
-<, > for a block surrounded by <>
-[, ] for a block surrounded by []
-t for tag.
+**內建 text-objects (中文版說明)**
 
 - `a` 一整個 text-object 加上空白
 - `i` 內部 text-object 不包含空白
@@ -894,76 +878,86 @@ t for tag.
 - `s` 一整句句子
 - `' "` quotes 引號
 - `p` paragraph 段落
-- `b` ()
-- `B` {}
-- `t` tag html
+- `b` () 括弧
+- `B` {} 括弧
+- `[]` [] 括弧
+- `<>` <> 括弧
+- `t` html tag
 
-diw delete in word
-caw change all word
-cw
-di[
-df space delete to space(space will delete)
-dt space delete untill space (space will not delete)
+**built-in text-objects**
 
-[number] d object 或者 d [number] object
-object
+- aw : a word
+- iw : inner word
+- aW : a WORD
+- iW :inner WORD
+- as : a sentence
+- is : inner sentence
+- ap : a paragraph
+- ip : inner paragraph
+- a[, a] : a [] block
+- i[, i] : inner [] block
+- a(, a) : a block
+- ab : a block (
+- i(, i) : inner block
+- ib : inner block (
+- a<, a> : a <> block
+- i<, i> : inner <> block
+- at : a tag block
+- it : inner tag block
+- a{, a} ,aB : a Block
+- i{, i} ,iB : inner Block
+- a", a', a` : a quoted string
+- i", i', i\` : Like a", a' and a\`, but exclude the quotes and repeating won't extend the Visual selection.
 
-輸入 :s/thee/the <回車> 。請注意該命令只改變光標所在行的第一個匹配串。
-輸入 :s/thee/the/g 則是替換全行的匹配串。
-要替換兩行之間出現的每個匹配串，請輸入 :#,#s/old/new/g (#,#代表的是兩行的行號)。
-輸入 :%s/old/new/g 則是替換整個文件中的每個匹配串。
-:#,#w FILENAME 可將當前編輯文件第 # 行至第 # 行的內容保存到文件 FILENAME 中。
-command :r TEST 將前面創建的名為 TEST 的文件提取進來
-:read $VIMRUNTIME/vimrc_example.vim
-:w 儲存檔案或可以令存新檔
-:sav 另存新檔
+| 指令        | 說明                                                   |
+| ----------- | ------------------------------------------------------ |
+| daw         | delete a word (plus trailing whitespace)               |
+| diw         | delete inner a word                                    |
+| diW         | delete inner WORD(`:h WORD`)                           |
+| das         | delete a sentence (dis delete inner sentence)          |
+| dap         | delete a paragraph                                     |
+| dat         | delete an HTML tag                                     |
+| dit         | delete anything in inner tag                           |
+| dab da( da) | delete a block surrounded by (                         |
+| daB da{ da} | delete a block surrounded by {                         |
+| da"         | delete something in double quotes including the quotes |
 
-:h backup-table
-backup off writebackup on:backup current file, deleted afterwards (default)
-// 列出 vim highlight 色碼表
-:so $VIMRUNTIME/syntax/hitest.vim
+在`:h object-texts`官方文件中有透過 delete 動作來講解此章節
 
-"dl" delete character (alias: "x") dl <br>
-"diw" delete inner word diw <br>
-"daw" delete a word daw <br>
-"diW" delete inner WORD (see WORD) diW <br>
-"daW" delete a WORD (see WORD) daW <br>
-"dgn" delete the next search pattern match dgn <br>
-"dd" delete one line dd <br>
-"dis" delete inner sentence dis <br>
-"das" delete a sentence das <br>
-"dib" delete inner '(' ')' block dib <br>
-"dab" delete a '(' ')' block dab <br>
-"dip" delete inner paragraph dip <br>
-"dap" delete a paragraph dap <br>
-"diB" delete inner '{' '}' block diB <br>
-"daB" delete a '{' '}' block daB <br>
-daw 與 daW 是不同的，e.g.
-＃0F0 daw 會把#去掉，daW 會把整個字段移除。
+- "dl" delete character (alias: "x")
+- "diw" delete inner word
+- "daw" delete a word
+- "diW" delete inner WORD (see WORD)
+- "daW" delete a WORD (see WORD)
+- "dgn" delete the next search pattern match
+- "dd" delete one line
+- "dis" delete inner sentence
+- "das" delete a sentence
+- "dib" delete inner '(' ')' block
+- "dab" delete a '(' ')' block
+- "dip" delete inner paragraph
+- "dap" delete a paragraph
+- "diB" delete inner '{' '}' block
+- "daB" delete a '{' '}' block
 
-dgn 或 cgn 會把下一個符合條件的字串做刪除或修改
-可以使用 gn gN 來改變方向
-詳細操作如該網誌
-https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/switftly-operate-on-search-matches/
-gn, gN 可以視為到下一個符合的字串
+※ 個人補充：
 
-caw,cas,cap to change a word, a sentence or a paragraph.
-ctx change until the first x
-
-5dw
-5dd
-
-The way that you specify a text object within a command is by combining the letter a (which represents the text object plus whitespace) or i (inner object without whitespace) with a character that represents a text object itself: w for word, s for sentence, ' " for quotes, p for paragraph, b for block surrounded by (, Bfor block surrounded by { and t for tag. So to delete different bits of text you could:
+1. `daw`, `daW` 是不同的，取決於 word 與 WORD 差異
+2. `dgn`, `cgn`, `dgN`, `cgN` 可以動作從現在到下（上）一個符合條件的地方做修改
+3. `gn`, `gN` 前往下（上）一個符合的字串
+4. [可以參考此網誌作為 operate 操作教學](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/switftly-operate-on-search-matches/)
 
 # Help
 
 [回到最上層](#Top-Content)
 
-`:h` 後
-輸入你想知道的指令，如果不確定，可以使用 Tab 或 CTRL-D 來補齊或者顯示清單。
+查找文件，看懂文件是學習 Vim 重要的方式，Vim 內建許多文件，讓使用者可以透過文件快速學習。
 
-`:h index.txt`
-許多詳細的教學就是在這上面
+**此章節紀錄各式各樣可以查找的文件，記得要在 Vim 編輯器中使用下列指令。**
+
+`:h` 後， 輸入你想知道的指令，如果不確定，可以使用 Tab 或 CTRL-D 來補齊或者顯示清單。
+
+`:h index.txt` 許多基礎詳細的教學就是在這上面
 
 `:h help-summary` or `:h helphelp` 顯示 help-summary, helphelp
 
@@ -971,8 +965,9 @@ The way that you specify a text object within a command is by combining the lett
 
 `:h map-modes` 顯示各種模式 map 範圍
 
-`:h key-notation key-codes keycodes`These names for keys are used in the documentation. They can also be used<br>
-e.g. \<CR> , \<NL> , \<BS> , \<Tab>
+`:h terminal-key-codes` 顯示哪些屬於 terminal keycodes
+
+`:h key-notation key-codes keycodes`列出在 Vim 中你可以使用的 key 綁定鍵，例如： `<CR>, <NL>, <BS>, <Tab>`
 
 `:h quoteplus` 查看 primay 暫存器相關介紹
 
@@ -988,28 +983,135 @@ e.g. \<CR> , \<NL> , \<BS> , \<Tab>
 
 `:h set-option` 查看各種 set 方法，其中 set {option}! set inv{option}可以做 toggle 選項
 
-`:h linewise-register` 說明行剪下的原因
+`:h linewise-register` 說明 linewise 暫存器貼上行為
 
-# Vim keycode
+`:h Insert Insert-mode` insert mode 說明
+
+`:h Cmdline Command-line mode-cmdline :` command line mode 說明
+
+`:h Visual Visual-mode visual-mode` visual 說明
+
+`:h motion` motion 說明
+
+`:h keepjumps` jumplist 中，可以前往但不改變 jumplist
+
+`:h %` or `:h matchpairs` 透過 % 在括號內移動
+
+`:h tags` 在 vim 中 tag 說明
+
+`:h abbreviations` ab 縮寫詞說明
+
+`:h search-commands` 所有與搜尋相關的 search 命令
+
+`:h hlsearch` or `:h hls` highlight 符合的搜尋結果
+
+`:h incsearch` or `:h is` 螢幕會立刻更新搜尋到符合條件的字串位置
+
+`:h ignorecase` or `:h ic` 忽略搜尋大小寫 (options.txt 內的文件)
+
+`:h smartcase` or `:h scs` 透過 smartcase 可以將搜尋在特定情況下符合條件都列出
+
+`:h 10.3` command range 範圍說明
+
+`:h gui-selections` 說明使用滑鼠 gui 界面時，操作互動方式
+
+`:h linewise characterwise` linewise 說明
+
+`:h WORD` 說明兩種 w W 的差異
+
+`:h Q` 說明 ex mode
+
+`:h scroll.txt` 移動畫面相關說明文件
+
+`:h changelist` 說明修改清單列表
+
+`:h operator` 說明 operator
+
+`:h jump-motions` 說明 jump-motions
+
+`:h /ignorecase` (pattern.txt 內說明文件)
+
+# Vim keycodes
 
 [回到最上層](#Top-Content)
 
-https://vimhelp.org/vim_faq.txt.html#faq-20.5 <br>
-https://vi.stackexchange.com/questions/8856/mapping-ctrl-with-equal-sign <br>
-| 按鍵 | 代表 | 等同按鍵 |
+`:h key-notation key-codes keycodes`
+
+keycodes 想不太到中文比較直觀的翻譯，因此還是使用 keycodes 說明。keycodes 就是在 Vim 中有名字綁定的按鍵名稱 ，例如： `<CR>, <NL>, <BS>, <Tab>`。
+
+- [詳細解釋未什麼部份的 C-xxx 無法使用](https://vimhelp.org/vim_faq.txt.html#faq-20.5)
+- [stackexchange 網站上問答 Vim ctrl 綁定問題](https://vi.stackexchange.com/questions/8856/mapping-ctrl-with-equal-sign)
+
+透過上述文章，我們可以得知雖然有許多好用的 keycodes 可以使用，但有些的按鍵會觸發原本的 ascii code 表示，因此使用時要特別注意。
+
+| 按鍵             | 代表         | 等同按鍵 |
 | ---------------- | ------------ | -------- |
-| Ctrl-@ | 0x00 | NUL |
-| Ctrl-A to Ctrl-Z | 0x01 to 0x1A | |
-| Ctrl-a to Ctrl-z | 0x01 to 0x1A | |
-| Ctrl-[ | 0x1B | ESC |
-| Ctrl-\ | 0x1C | |
-| Ctrl-] | 0x1D | |
-| Ctrl-^ | 0x1E | |
-| Ctrl-\_ | 0x1F | |
-| Ctrl-? | 0x7F | DEL |
-Most of these, however, already have a function in Vim (and some are
-aliases of other keys: Ctrl-H and Bsp, Ctrl-I and Tab, Ctrl-M and Enter,
-Ctrl-[ and Esc, Ctrl-? and Del).
+| Ctrl-@           | 0x00         | NUL      |
+| Ctrl-A to Ctrl-Z | 0x01 to 0x1A |          |
+| Ctrl-a to Ctrl-z | 0x01 to 0x1A |          |
+| Ctrl-[           | 0x1B         | ESC      |
+| Ctrl-\           | 0x1C         |          |
+| Ctrl-]           | 0x1D         |          |
+| Ctrl-^           | 0x1E         |          |
+| Ctrl-\_          | 0x1F         |          |
+| Ctrl-?           | 0x7F         | DEL      |
+
+更多的 keycodes 建議直接查看`:h keycodes`。
+
+有些按鍵它本身就是有備使用的等同按鍵(alias)如：
+
+- Ctrl-@ versus \<NUL>
+- Ctrl-H versus backspace
+- Ctrl-I versus tab
+- Ctrl-J versus linefeed (used for \<Nul>)
+- Ctrl-L versus formfeed
+- Ctrl-M versus carriage-return(used for \<CR> , same as \<Return>)
+- Ctrl-[ versus escape
+- Ctrl-? versus Del
+
+## fast keycodes
+
+[回到最上層](#Top-Content)
+
+fast keycodes ，從字面上來說，就是透過設定某個綁定鍵，達成快速達成輸入某個字串，來達成某些組合鍵功能。(建議先花三分鐘看下面文章)
+
+[ Mapping fast keycodes in terminal Vim ](https://vim.fandom.com/wiki/Mapping_fast_keycodes_in_terminal_Vim)
+
+根據上述文章而言，如果在 GUI 界面的 Vim(gvim)，如果要綁定 Ctrl-Shift-F2 是非常容易的。
+
+```text
+"delete all lines in the current buffer
+:nmap <C-S-F2> ggdG
+```
+
+但如果你今天是在 terminal 中使用 Vim 的話，那麼就需要許多額外的功夫。
+
+keycodes 有分為兩種：
+
+`:h terminal-key-codes` 與 `:h keycodes`
+
+如果是在`terminal-key-codes`中的，需要先透過 _set_ 設定 fast keycodes，如果是在`keycodes`中有定義的，那麼就用 _map_ 設定 fast keycodes 即可。
+
+```text
+# work in Vim 8.1,gnome terminal
+set <S-F2> =^[[1;2Q # 因為markdown關係，實際上在vimrc中，> =中間是沒有空格的
+map <S-F2> :set cursorline!<CR>
+map <ESC>[1;5Q <C-F2>
+map <C-F2> :set cursorcolumn!<CR>
+```
+
+舉例，在設定 S-F2 與 C-F2 當中，S-F2 屬`terminal-key-codes`，因此要先透過 _set_ 設定 S-F2 的 fast keycodes；而 C-F2 屬`:h keycodes`，因此要透過 _map_ 設定 C-F2 的 fast keycodes。
+
+建議查看 fast keycodes 方式：
+
+1. 在 terminal 的 Vim 中，先透過`:` 進入 cmdline 模式
+2. 按下`C-v`
+3. 按下你想要查看的組合鍵（e.g. S-F2)
+4. 得到 ^[[1;2Q
+
+相關 Vim fast keycodes 設定可以參考我的[dotfile/laudai.vimrc repo](https://github.com/laudai/dotfile/blob/master/laudai.vimrc)
+
+@@@ 從這裡繼續整理
 
 # marco
 
@@ -1168,6 +1270,11 @@ set compatible! " append ! to toggle the option
 set compatible? " find out whether the option is enabled
 set compatible& " reset to default vim option
 
+`:h backup-table`
+backup off writebackup on:backup current file, deleted afterwards (default)
+// 列出 vim highlight 色碼表
+:so $VIMRUNTIME/syntax/hitest.vim
+
 可以讓你的 vimrc 碎片話，小區塊
 https://github.com/Vintharas/BarbaricNeoVim/blob/master/init.vim
 
@@ -1205,7 +1312,7 @@ To exit unconditionally without changing anything: `ZQ` (same as `:q!`).
 N 代表設定的行數大小或者寬度大小，取決於你使用的是 vs 還是 sp
 在 vscode vim keymap 中不能使用行數設定
 
-### Normal mode
+## Normal mode
 
 [回到最上層](#Top-Content)
 
@@ -1217,6 +1324,9 @@ tabe[dit] {file}
 close window
 C-w c or :clo or :close
 :h tabpage
+
+gn
+gN
 
 [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip)
 Use <C-W> > and <C-W> < to resize a vertical split (as a mnemonic think about a vertical split increasing and decreasing it’s width)
@@ -1447,6 +1557,9 @@ https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/ch
 
 Vim 8 Improves Plugin Support
 [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-setting-up-your-vim-to-be-more-awesome-at-vim#defining-your-own-commands)
+
+- https://blog.csdn.net/lanchunhui/article/details/51542211
+  處理大小寫轉換
 
 ```
 Vim 8 has built-in support for plugins that was unavailable in previous versions of vim. The idea is to drop your plugins into a special folder and Vim will load them when starting up. This is better than what was available before but I think that having a plugin manager simplifies things a lot. Instead of having to clone repos on this special folder you specify declaratively which plugins you want to have in your vimrc file and you're good to go.
