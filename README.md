@@ -751,21 +751,28 @@ e.g.
 
 `:h operator`
 
-`operator` 一般常用的就是 delete, change, yank, swap case 等操作符。可以搭配 `count` 一同使用，最後再使用 `motion` 決定要抵達的位置。
+`operator` 一般常用的就是 delete, change, yank, swap case 等操作符。
 
-常見的 operator 有：
+在前面章節中，已大致學會 vim 的各項精髓，我們練習過 `motion`, `marks`與 `registers`，在此章節中我們要透過`operator` 讓你在編輯的時候可以更快速。可以搭配 `count` 一同使用，最後再使用 `motion` 決定要抵達的位置。
 
-- `c` : change
-- `d` : delete
-- `y` : yank
-- `~` : swap case
-- `g~` : swap case
-- `gu` : make lowerecase
-- `gU` : make uppercase
-- `>` : shift right
-- `<` : shift left
-- `=` : filter through 'equalprg' or C-indenting if empty
-- `zf` : define a fold
+- `count`: 要將此動作運行幾次。
+- `operator`: 可以理解為動作，一般都用來刪除或改變文字，下表列出常用的 `operator`。
+- `motion`: 將游標要移動到的位置。
+
+| operator | 說明                              |
+| -------- | --------------------------------- |
+| c        | 修改                              |
+| d        | 刪除                              |
+| y        | 複製至暫存器(register)            |
+| ~        | 交換大小寫（當 tildeop 有設定時） |
+| g~       | 交換大小寫                        |
+| gu       | 改成小寫                          |
+| gU       | 改成大寫                          |
+| =        | 依照 C 語言方式進行縮排修正       |
+| gq       | 依照 textwidth 進行文件格式化     |
+| >        | 向右位移                          |
+| <        | 向左位移                          |
+| zf       | 定義一段折疊資料夾                |
 
 ## Editing Like Magic With Vim Operators
 
@@ -804,7 +811,6 @@ e.g.
 
 [回到最上層](#Top-Content)
 
-- `y` : yank or copy in Vim jargon
 - `p` : put or paste in Vim jargon
 - `x`: Does the same as "dl"，為`<DEL>`key，但差別在於可以`[count]x`而不能`[count]<DEL>`
 - `X`: Does the same as "dh"
