@@ -11,6 +11,11 @@ The quick brown fox jumps over the lazy dog.
 
 若有機會再整理成 Gitbook。
 
+## 推薦加入討論群組
+
+- [Group: Vim-Taiwan | Google Groups](http://groups.google.com/group/vim-taiwan)
+- [Telegram Vim 正體中文社群](https://t.me/vim_tw)
+
 # Top Content
 
 - [Top Content](#top-content)
@@ -55,9 +60,17 @@ The quick brown fox jumps over the lazy dog.
   - [fast keycodes](#fast-keycodes)
 - [marco](#marco)
 - [File navigating](#file-navigating)
-- [buffer](#buffer)
-- [window split](#window-split)
-  - [Normal mode](#normal-mode)
+- [Buffer, Window, Tab, View, Session](#buffer-window-tab-view-session)
+  - [buffer](#buffer)
+  - [window](#window)
+    - [window split command-line mode](#window-split-command-line-mode)
+    - [window split normal mode](#window-split-normal-mode)
+      - [將兩個視窗交換 layout](#將兩個視窗交換-layout)
+  - [tab](#tab)
+    - [tab command-line mode](#tab-command-line-mode)
+    - [tab normal mode](#tab-normal-mode)
+  - [view](#view)
+  - [session](#session)
 - [待分類](#待分類)
 - [看不懂的](#看不懂的)
 - [有空可以研究的](#有空可以研究的)
@@ -428,8 +441,8 @@ CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 
 [回到最上層](#Top-Content)
 
-- `[count]u` undo
-- `[count]ctrl-r` redo
+- `[count]u` undo 復原
+- `[count]ctrl-r` redo 重做
 - `U` 整行恢復
 - `[count].` 重複最後一次做的動作幾次(可配合`n`, `N`, `,`, `;` 一起使用，會出其的好用)
 - `~` 改變目前游標字母大小寫
@@ -448,6 +461,8 @@ CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 - `gp` 在游標後，貼上暫存器內容，貼上後游標向後移動到新的字元 (可使用 linewise 做測試)
 - `gP` 在游標前，貼上暫存器內容，貼上後游標向後移動到新的字元 (可使用 linewise 做測試)
 - `:[range]m[ove] {address}` 把該行或者選取範圍內，向上/下移動幾行(透過`+`, `-`)
+- `:u[ndo] {N}` undo command-line
+- `:red[o]` redo command-line
 
 e.g.
 
@@ -501,12 +516,31 @@ e.g.
 說明：
 
 ```text
-count 為幾次
-s/m/h/d/f 為幾 秒/分/小時/天/檔案 <br>
+count 為幾次，e.g. :ea2 恢復至前檔案兩次
+s/m/h/d/f 為幾 秒/分/小時/天/檔案
 ```
 
 > Vim is very special in that provides multi-level undo, that is, every time that you undo stuff and start doing something different you create a new branch of undos. Vim keeps all of these branches available for you to tinker with so no change is lost. You can find more info about this topic in :h undo-branches. One nugget: If you use :earlier 1f you can undo all changes you did from the last time you saved a file. Fear not for you can do :later 1f to go forward in time. (You can also repeat any of these commands to go backwards and forward in time. Cool or what?).
 > [source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip#undoing-and-redoing)
+
+`:h undo-tree`
+
+`:h :undolist`
+
+透過 `:undolist` 可以得到下面的資訊：
+
+- number:表示其改變次數的號碼，它是一個不斷增加的數字，用以表示哪些可以復原的動作
+- changes:表示從「根節點」到現在改變幾處
+- when:表示這個改變離「根節點」改變有多久
+- saved 表示是否以儲存，若此次改變是寫入硬碟中，那麼後續可以透過`:later` 或 `:earlier` 去 undo redo 檔案，更多說明可以參考 `:h undotree()`。至於若想要用 undo 相關 plugin，可以使用[undotree](https://www.vim.org/scripts/script.php?script_id=4177)這個套件。
+
+```text
+  number changes  when               saved ~
+      88      88  2010/01/04 14:25:53
+     108     107  08/07 12:47:51
+     136      46  13:33:01             7
+     166     164  3 seconds ago
+```
 
 ## 搜尋 search
 
@@ -530,8 +564,10 @@ s/m/h/d/f 為幾 秒/分/小時/天/檔案 <br>
 **搜尋模式移動**
 
 ```text
-n 向下一個移動到符合搜尋條件字串
-N 向上一個移動到符合搜尋條件字串
+n 向下移動一個到符合搜尋條件的字串
+N 向上移動一個到符合搜尋條件的字串
+gn 以 Visual mode 向下選取符合搜尋條件的字串
+gN 以 Visual mode 向上選取符合搜尋條件的字串
 * 向下移動到與目前游標下相同字串
 # 向上移動到與目前游標下相同字串
 ```
@@ -773,8 +809,8 @@ e.g.
 | gU       | 改成大寫                          |
 | =        | 依照 C 語言方式進行縮排修正       |
 | gq       | 依照 textwidth 進行文件格式化     |
-| >        | 向右位移                          |
-| <        | 向左位移                          |
+| >        | 整行向右位移                      |
+| <        | 整行向左位移                      |
 | zf       | 定義一段折疊資料夾                |
 
 ## Editing Like Magic With Vim Operators
@@ -952,9 +988,11 @@ e.g.
 ※ 個人補充：
 
 1. `daw`, `daW` 是不同的，取決於 word 與 WORD 差異
-2. `dgn`, `cgn`, `dgN`, `cgN` 可以動作從現在到下（上）一個符合條件的地方做修改
-3. `gn`, `gN` 前往下（上）一個符合的字串
-4. [可以參考此網誌作為 operate 操作教學](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/switftly-operate-on-search-matches/)
+2. {operator}gn {operator}gN 為 operator + gn 的操作
+3. `dgn`, `cgn`, `dgN`, `cgN` 可以動作從現在到下（上）一個符合條件的地方做修改
+4. `gn`, `gN` 前往下（上）一個符合的字串
+5. 最常使用的就是搜尋過後`dgn` 之後再 `.` 重複操作
+6. [可以參考此網誌作為 operate 操作教學](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/switftly-operate-on-search-matches/)
 
 # Help
 
@@ -1156,8 +1194,36 @@ netrw 非常強大，有許多功能可以使用，但建議可以使用套件 N
 如果需要檔案編輯，可以使用`:e[dit]`，其中與路徑相關設定可以參考`:h filename-modifiers`
 
 若對於 Vim buffer 不熟悉，可以先使用`:set hiddien`隱藏 buffer 設定。
+`:Explore` 開啟檔案瀏覽器，去選擇檔案或者資料夾
 
-# buffer
+# Buffer, Window, Tab, View, Session
+
+[回到最上層](#Top-Content)
+
+一個 session 可以包含多個 tab，一個 tab 可以包含一個 window，一個 window 內可以切換多個 buffer。
+
+在 Vim 中，依照大小概念的話 _**buffer < window < tab < session**_。一個 window 可以被切割(split)成多個區域，α, β, γ 區合計為 一個 window。當開啟多個檔案的時候，每個區域可以開啟不同的 buffer。每個 tab 可以儲存不同的 window layout。
+
+可以依照下圖來做參考
+
+```text
+____________________________________________
+|___tab__A___|___tab_B___|______tab_N...___|
+|                                |         |
+|                                |         |
+|                                |         |
+|               α                |         |
+|                                |         |
+|________________________________|    γ    |
+|                                |         |
+|                                |         |
+|               β                |         |
+|                                |         |
+|                                |         |
+_________________________________|_________|
+```
+
+## buffer
 
 [回到最上層](#Top-Content)
 
@@ -1182,162 +1248,169 @@ Vim 的 buffer 預設是啟用的，如果對 buffer 不熟悉，可以先設定
 | `:h sbf[irst]`                           | 同 sbrewind                      |
 | `:h sbl[ast]`                            | 水平切割並回到最後一個 buffer    |
 
-@@@ 從這裡繼續整理
-
-# window split
+## window
 
 [回到最上層](#Top-Content)
 
-:vsp ~/.vimrc
-:10sp ~/.zshrc
-:sp
-:vs[p]
+在一個 window 中，你可以任意切換其檔案中的 buffer，也可以切割成多個區域，在此小節中主要分享多個切割 window 的指令與動作。
 
-:[N]sp[lit] [++opt] [+cmd] [file: sp :split
-同<C-w> S
+`:h windows.txt`
 
-:[N]vs[plit] [++opt] [+cmd] [file] :vs :vsplit
-同<C-w> V
+其內容章節有：
 
-在 vscode 中，當你切割完了，在使用 Ctrl-P 來開啟你想要的檔案
+```text
+1.  Introduction				windows-intro
+2.  Starting Vim				windows-starting
+3.  Opening and closing a window		opening-window
+4.  Moving cursor to other windows		window-move-cursor
+5.  Moving windows around			window-moving
+6.  Window resizing				window-resize
+7.  Argument and buffer list commands		buffer-list
+8.  Do a command in all buffers or windows	list-repeat
+9.  Tag or file name under the cursor		window-tag
+10. The preview window				preview-window
+11. Using hidden buffers			buffer-hidden
+12. Special kinds of buffers			special-buffers
+```
 
-N 代表設定的行數大小或者寬度大小，取決於你使用的是 vs 還是 sp
-在 vscode vim keymap 中不能使用行數設定
-
-## Normal mode
+### window split command-line mode
 
 [回到最上層](#Top-Content)
 
-tabe[dit] {file}
-:tabn = gt
-:tabp = gT
-:tabo[nly][!]
+- `:res[ize] [N,+/- N]` 設定水平視窗列高
+- `:vertical res[ize] [N, +/- N]` 設定垂直視窗欄寬
+- `:[N]sp[lit] [file]` 將此視窗水平切割成 N 列，若無指定則切割當前畫面一半。
+- `:[N]vs[plit] [file]` 將此視窗垂直切割成 N 欄，若無指定則切割當前畫面
+- `:q[uit]` 離開現在的 window，如果是 Vim 中的最後一個視窗，則會離開 Vim
+- `:on[ly]` 使目前 window 成為唯一的 window
+- `:{count}clo[se]` 關閉第 count 個的視窗，若無 count 則關閉當前視窗
 
-close window
-C-w c or :clo or :close
-:h tabpage
+### window split normal mode
 
-gn
-gN
+[回到最上層](#Top-Content)
 
-[source](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip)
-Use <C-W> > and <C-W> < to resize a vertical split (as a mnemonic think about a vertical split increasing and decreasing it’s width)
-Use <C-W> | to have a vertical split take its maximum width
-Use <C-W> + and <C-W> - to resize a horizontal split
-Use <C-w> \_ to have a horizontal split take its maximum height
-Use <C-W> = to have all splits have equal dimensions
+- `CTRL-W [N] h/j/k/l` 在切割視窗內朝四種所選方向移動 N 個視窗
+- `CTRL-W H/J/K/L` 將切割視窗移到最上、下、左、右的位置
+- `CTRL-W [N]n` 水平切割成新視窗，若無設定 N 列，則水平平分列高
+- `CTRL-W s` 水平切割現在的視窗
+- `CTRL-W v` 垂直切割現在的視窗
+- `CTRL-W [N]|/[N]_` 設定 N 欄寬、N 列高；若無，則最大化視窗欄寬、列高
+- `CTRL-W =` 使所有視窗盡可能的一樣欄寬、列高
+- `CTRL-W t` 移動到最頂部的視窗
+- `CTRL-W b` 移動到最底部的視窗
+- `CTRL-W +/-` 增/減視窗列高，若前面加數字可快速改變大小 e.g. 10Ctrl-w +
+- `CTRL-W >/<` 增/減視窗行高，若前面加數字可快速改變大小 e.g. 10Ctrl-w <
+- `CTRL-W q` 離開目前的 window(同`:quit`)
+- `CTRL-W [N]c` 關閉第 N 個的 window，若無 N 則關閉目前的 window(同`:close`)
+- `CTRL-W p` 前往最後一到過的切割視窗。
+- `CTRL-W [N]w` 前往第 N 個切割視窗，若無 N 則前往下一個切割視窗(循環)。
+- `CTRL-W [N]W` 前往第 N 個切割視窗，若無 N 則前往上一個切割視窗(循環)。
+- `CTRL-W [N]r` 向下旋轉 N 個位置
+- `CTRL-W [N]R` 向上旋轉 N 個位置
+- `CTRL-W T` 將現在的 window 移至新的 tab 頁面
+- `CTRL-W o` 除了現在的 window 外，其他的 window 都關閉(同`:only`)
+- `CTRL-W [N]x` 與第 N 個視窗交換，若無 N 則與下一個交換
 
-Next tab: gt
-Prior tab: gT
-Numbered tab: {number}gt 切換到對應索引的 tab。(index 從 1 開始)
-https://vim.fandom.com/wiki/Using_tab_pages
+比較少用到的功能
 
-:[count]tabe[dit] :tabe :tabedit :tabnew
-:[count]tabnew
-Open a new tab page with an empty window, after the current
-tab page. If [count] is given the new tab page appears after
-the tab page [count] otherwise the new tab page will appear
-after the current one.
-:tabnew " opens tabpage after the current one
-:.tabnew " as above
-:+tabnew " opens tabpage after the next tab page
-" note: it is one further than :tabnew
-:-tabnew " opens tabpage before the current one
-:0tabnew " opens tabpage before the first one
-:$tabnew " opens tabpage after the last one
-tabmove {+-number} 移動 tab 到相對索引值
-tabnoly 只留下此 tab。
+- `CTRL-W ]` 水平切割視窗，並且跳轉到目前游標下面的 tag 位置
+- `CTRL-W d` 水平切割，並跳轉到游標下面的定義位置
+- `CTRL-W i` 水平切割，並跳轉到游標下面的宣告字串部份
+- `CTRL-W f` 水平切割，並跳轉到游標下面符合檔名字串的位置
+- `CTRL-W F` 水平切割，並跳轉到游標下面符合檔名字串的位置，並到相同的行數
+- `CTRL-W gf` 水平切割，以新 tab 方式跳轉到游標下面符合檔名字串的位置
+- `CTRL-W gF` 水平切割，以新 tab 方式跳轉到游標下面符合檔名字串的位置，並到相同的行數
+- `CTRL-W [N]^` 水平切割視窗，並跳轉到第 N 個緩衝區
+- `CTRL-W P` 前往預覽視窗
+- `CTRL-W z` 關閉預覽視窗
+- `CTRL-W S` 同水平切割視窗
+- `CTRL-W [N]gt` 同 normal `gt`，前往第 N 個 tab；若無，則前往下一個 tab
+- `CTRL-W [N]gT` 同 normal `gT`，前往第 N 個 tab；若無，則前往上一個 tab
+- `CTRL-W }` 在預覽視窗中顯示 tag 標籤
+- `z{nr}<CR>` 設定視窗水平列高至 N 行
 
-    {operator}gn Apply operator on next match
-    . After using {op}gn, the dot commant repeats the last change on the next match. Woooot!
+#### 將兩個視窗交換 layout
 
-    u undo last change
-    C-R redo last undo
-    {count}u undo last {count} changes
-                                     *:ea* *:earlier*
+[回到最上層](#Top-Content)
 
-:earlier {count} Go to older text state {count} times.
-:earlier {N}s Go to older text state about {N} seconds before.
-:earlier {N}m Go to older text state about {N} minutes before.
-:earlier {N}h Go to older text state about {N} hours before.
-:earlier {N}d Go to older text state about {N} days before.
+參考文章[To switch from vertical split to horizontal split fast in Vim](https://stackoverflow.com/questions/1269603/to-switch-from-vertical-split-to-horizontal-split-fast-in-vim)
 
-:earlier {N}f Go to older text state {N} file writes before.
-When changes were made since the last write
-":earlier 1f" will revert the text to the state when
-it was written. Otherwise it will go to the write
-before that.
-When at the state of the first file write, or when
-the file was not written, ":earlier 1f" will go to
-before the first change.
+垂直視窗轉水平視窗： Ctrl-w t Ctrl-w K
 
-:h undo-tree
-:h :undolist
+水平視窗轉垂直視窗： Ctrl-w t Ctrl-w H
 
-Resizing splits
-Vim’s defaults are useful for changing split shapes:
-"Max out the height of the current split
-ctrl + w \_
-"Max out the width of the current split
-ctrl + w |
+原文：
 
-C-w \_ 將此分割高度最大化
-`resize`
-C-w | 將此分割寬度最大化
-`vertical resize`
-C-w < / C-w > 垂直切割改變寬度
-C-w - / C-w + 水平切割改變高度
-C-w = 平均分割視窗
-5 C-w < 向左移動五
+```text
+To change two vertically split windows to horizonally split
+Ctrl-w t Ctrl-w K
+Horizontally to vertically:
+Ctrl-w t Ctrl-w H
+```
 
-C-w r 遞增交換切割視窗
-C-w R 遞減交換切割視窗
-C-w T 將當前視窗移動到新的 tabview
-C-w o 在此 tabview 中，關閉其它 Window，只留下目前游標所在的 window
-C-w t go to the top window
-C-w b go to the bottom window
+## tab
 
-:h Ctrl-w
+[回到最上層](#Top-Content)
 
-Ctrl+W n
-Create a new window and start editing an empty file in it.
+`:h tabpage.txt`
 
-Ctrl+W s 水平切割現在視窗
-Ctrl+W v 垂直切割現在視窗
+### tab command-line mode
 
-:h window-resize and h: window-moving
+[回到最上層](#Top-Content)
 
-CTRL+w, c: Closes a window but keeps the buffer
-Ctrl + w j = 把游標往下面的分割視窗移動
-Ctrl + w k = 把游標往上面的分割視窗移動
-Ctrl + w h = 把游標往左邊的分割視窗移動
-Ctrl + w left arrow = 把游標往左邊的分割視窗移動
-Ctrl + w l = 把游標往右邊的分割視窗移動
-Ctrl + w right arrow = 把游標往右邊的分割視窗移動
-Ctrl + w Ctrl + w = 在各個分割視窗間切換
-ctrl + w n
-ctrl + w v
-ctrl + w s
-ctrl + w x
-CTRL+w, r: Moves the current window to the right
-Control+w, then hit q
+- `:[count]tabe[dit] {file}` 同 `:[count]tabnew` 在第 count tab 後建立空排 tab，若無 count，則在當前 tab 後建立空白 tab
+- `:tabn[ext] {count}` 移動到第 count tab;若無，向後移動一個 tab(環繞)
+- `:tabp[revious] {count}` 同 `:tabN[ext] {count}` 向前移動 count 個 tab；若無，向前移動一個 tab(環繞)
 
-ctrl + w H
-ctrl + w L
-ctrl + w J
-ctrl + w K
+- `:tabm[ove] [N]` 將 tab 移動到第 N 個 tab 頁面後面；若無，移動到最後一個
+  - e.g.
+  - -tabm tab 向左移動
+  - +tabm tab 向右移動
+  - 0tabm tab 移到第一個
+  - tabm tab 移動到最後一個
+  - tabm $ 同上，tab 移動到最後一個
+- `:tabc[lose]` 關閉目前的 tab 頁面
+- `:tabo[nly] {count}` 除了 count 位置 tab，其餘 tab 關閉。若無 count，則除了當前以外的 tab 都關閉。
+- `:[count]tab {cmd}` 在第 count tab 後，開啟 tab 去執行 cmd 指令。若無 count，則在當前頁面後建立 tab。
+- `:tabs` 列出所有 tab 頁面狀況
+- `:tabr[ewid]` 同 `:tabfir[st]` 前往第一個 tab 頁面
+- `:tabl[ast]` 前往最後一個 tab 頁面
 
-switch vim layout
-[To switch from vertical split to horizontal split fast in Vim](https://stackoverflow.com/questions/1269603/to-switch-from-vertical-split-to-horizontal-split-fast-in-vim)
+### tab normal mode
 
-    To change two vertically split windows to horizonally split
-    Ctrl-w t Ctrl-w K
-    Horizontally to vertically:
-    Ctrl-w t Ctrl-w H
-    Explanations:
-    Ctrl-w t makes the first (topleft) window current
-    Ctrl-w K moves the current window to full-width at the very top
-    Ctrl-w H moves the current window to full-height at far left
+[回到最上層](#Top-Content)
+
+- `{count}gt` 同 `:tabn[ext] {count}` 移動到第 count tab;若無，向後移動一個 tab(環繞)
+- `{count}gT` 同 `:tabp[revious] {count}` 同 `:tabN[ext] {count}` 向前移動 count 個 tab；若無，向前移動一個 tab(環繞)
+
+## view
+
+[回到最上層](#Top-Content)
+
+A View is a collection of settings that apply to one window.
+view 就是把當前個 window 的設定狀態都可以紀錄起來
+
+- `:mkvie[w][!] [file]` 可將目前檔案的 view 設定狀態保存起來
+- `:source {vim_view_filename}` 開啟 view 檔案，會將當時的設定狀態、檔案同時開啟
+- `:lo[adview] [nr]` 如果在編輯某個檔案，並且有對他的 view 設定做修改。若當初是`:mkview` ，那麼再次開啟時要回到上次上定的狀態，可以使用`:loadview`
+
+若對於自動讀取每個檔案的 view 有興趣，可以參考此篇文章:[ Make views automatic ](https://vim.fandom.com/wiki/Make_views_automatic)
+
+## session
+
+[回到最上層](#Top-Content)
+
+session 可以將當前的 window 狀態保存起來，讓你下此使用此 layout、狀態
+
+- `:mks[session][!] [file]` 製作 vim session 檔案
+- `:source {vim_session_filename}` 在 vim 內讀取 session 檔案
+- `$vim -S {vim_session_filename}` 從 shell 讀取 vim session 檔案
+
+  手動設定、自動讀取 session 設定 可參考這篇文章：[[Vim Protips] Save session – 儲存是為了走得更長遠](https://blog.wildsky.cc/posts/vim-save-session)
+
+  自動寫入、自動讀取 session 設定 可使用此套件：[ autosess : Auto save/load sessions ](https://www.vim.org/scripts/script.php?script_id=3883)
+
+  @@@ 從這裡繼續整理
 
 # 待分類
 
@@ -1586,6 +1659,8 @@ $ vim -u NONE fileyouwantopen
 
 [ Navigate your vscode like it's 1999 (the vim way) ](https://dev.to/karlredman/navigate-your-vscode-like-its-1999-the-vim-way-3632)
 
+[ Best Way to Navigate Files in Vim ](https://irian.to/blogs/best-way-to-navigate-files-in-vim/)此篇文章內的 vim fzf neredtree 等等 vim flow 可以參考
+
 一個可以讓你練習打字的地方 [source](https://www.barbarianmeetscoding.com/blog/exploring-vim)
 
 - typing.com. I spent a ton of time in this website to kill all my bad habits and learn touch typing the proper way. I still use it today to practice typing katas when I feel my touch typing is getting rusty. It’s amazing how this site has improved over the years.
@@ -1621,6 +1696,8 @@ The nitty gritty of packages and different types of plugins is out of the scope 
 2018 年的 Vim 搭建教學文，使用 Vim8
 
 [ Commenting with opfunc ](https://vim.fandom.com/wiki/Commenting_with_opfunc)
+
+[ vi、Vim 文字編輯器教學和常用按鍵與指令表 ](https://www.footmark.info/linux/centos/vi-vim/)
 
 # VScode Vim Keymap 特殊用法
 
@@ -1672,6 +1749,8 @@ Bind { to w in operator pending mode makes y{ and d{ work like yw and dw respect
             "after": ["w"]
         }
     ]
+
+在 vscode 中，當你切割完了，在使用 Ctrl-P 來開啟你想要的檔案
 
 VSCode vim keymap 沒有實做`[count]zz`
 
@@ -1880,6 +1959,8 @@ Sneak is invoked with operators via z (because s is taken by surround.vim).
 不確定為什麼 vim 中不能使用下一個 ; ,
 但 VSCode 中可以使用 ; ,
 原因出爐，因為我使用 ;q 作為 map key，所以需要從新思考了
+
+[surround 可視模式下操作](https://gist.github.com/wilon/ac1fc66f4a79e7b0c161c80877c75c94)
 
 ## easymotion
 
