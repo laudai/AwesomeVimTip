@@ -19,11 +19,13 @@ The quick brown fox jumps over the lazy dog.
 # Top Content
 
 - [Top Content](#top-content)
+- [Vim shell 介面指令](#vim-shell-介面指令)
 - [Insert-mode](#insert-mode)
   - [insert mode operator](#insert-mode-operator)
   - [insert mode 編輯檔案快捷鍵](#insert-mode-編輯檔案快捷鍵)
 - [Command-line-mode](#command-line-mode)
   - [符號意思](#符號意思)
+  - [進階 command](#進階-command)
   - [Ex-command mode](#ex-command-mode)
 - [Visual-mode](#visual-mode)
   - [visual mode operator](#visual-mode-operator)
@@ -71,16 +73,20 @@ The quick brown fox jumps over the lazy dog.
     - [tab normal mode](#tab-normal-mode)
   - [view](#view)
   - [session](#session)
+- [Keybinding](#keybinding)
+- [Vim Configuration](#vim-configuration)
+  - [如何得知目前的設定，與設定方式](#如何得知目前的設定與設定方式)
+  - [Setting](#setting)
+  - [撰寫 vimrc 建議](#撰寫-vimrc-建議)
+- [Misc 一些雜項](#misc-一些雜項)
+  - [shortcuts](#shortcuts)
+    - [normal mode](#normal-mode)
+  - [Vim password protext files.](#vim-password-protext-files)
+  - [colorschemes 顏色主題配置](#colorschemes-顏色主題配置)
 - [待分類](#待分類)
+  - [defiend your own commands](#defiend-your-own-commands)
 - [看不懂的](#看不懂的)
 - [有空可以研究的](#有空可以研究的)
-- [Setting](#setting)
-  - [defiend your own commands](#defiend-your-own-commands)
-- [shortcuts](#shortcuts)
-- [Vim password protext files.](#vim-password-protext-files)
-- [Vim Configuration](#vim-configuration)
-  - [如何得知目前的設定](#如何得知目前的設定)
-- [colorschemes](#colorschemes)
 - [Vim 寫得不錯的網站 article website](#vim-寫得不錯的網站-article-website)
 - [VScode Vim Keymap 特殊用法](#vscode-vim-keymap-特殊用法)
   - [vscode plugin](#vscode-plugin)
@@ -143,6 +149,14 @@ The quick brown fox jumps over the lazy dog.
   - [ctag](#ctag)
 - [License](#license)
 
+# Vim shell 介面指令
+
+[回到最上層](#Top-Content)
+
+- `$vim {filename} +{numberline}` 以第 numberline 行數開啟檔案
+- `vim -o {file1} {file2} {fileN}` 將多個檔案以水平切割方式開啟
+- `vim -O {file1} {file2} {fileN}` 將多個檔案以垂直切割方式開啟
+
 # Insert-mode
 
 [回到最上層](#Top-Content)
@@ -201,8 +215,18 @@ The quick brown fox jumps over the lazy dog.
 - `:w` 儲存該檔案或在後面加入新檔名另存新檔
 - `:sav` 另存新檔
 
+## 進階 command
+
+[回到最上層](#Top-Content)
+
 個人認為 `:.,+2 {operator}` `:.,5 {operator}` 這種方式比較好理解
 `@:` or `@@` 可以使用最後的 command-line commands
+
+- `:h :global`
+
+  `:[range]g[lobal]/{patern}/[cmd]`可以將範圍內符合條件的句子都執行 cmd 指令
+
+  `:[range]g[lobal]!/{patern}/[cmd]` 可以將範圍內與符合條件相反的句子都執行 cmd 指令
 
 ## Ex-command mode
 
@@ -606,31 +630,58 @@ gN 以 Visual mode 向上選取符合搜尋條件的字串
 Substituting Text
 `:[range]s/{pattern}/{substitute}/{flags}`
 
-- 將所此文件所有#開頭的字元，取代成空字串(Markdown 文件很好用)
-  `:%s/^#//`
-
 - 只會取代該行第一個符合的字串
+
   `:s/led/gold`
 
 - 取代該行所有符合的字串
+
   `:s/led/gold/g`
 
 - 取代此行到文末所有符合的字串
+
   `:.,$s/led/gold/g`
 
 - 取代此行號範圍內所有符合的字串
+
   `:#,#s/led/gold/g`
 
+- 將所此文件所有#開頭的字元，取代成空字串(Markdown 文件很好用)
+
+  `:%s/^#//`
+
 - 取代此文件所有符合的字串
+
   `:%s/led/gold/g`
 
 - 將所有句子的句點，取代成句點與換行，達成分行的目的
+
   `:%s/\. /\.\r/g`
 
+- 搜尋並統計所有符合條件的句子
+
+  `:%s/{text}//gn`
+
+  - 另類搜尋並統計所有符合條件的句子
+
+    `:%s/{text}/&/g`
+
+    因為&會替換成前面的字，所以會變成 a 替換成 a，是個很漂亮知道總共換了在多少行中換了多少字
+
 - 搜尋並刪除而不做替換
+
   `:g/{text}/d`
 
+- 搜尋並刪除此條件以外的句子
+
+  `:g!/{text}/d`
+
+- 以預覽視窗開啟顯示符合條件的句子
+
+  `:g/{text}/p[rint]`
+
 - 從現在行到 774 行，將 delete 取代成 deletes，每次取代前都詢問
+
   `:.,774/delete/deletes/gc`
 
 `[count]{operator}{search-commands}{text-objects}`做`operator`到第 count 個符合字串。
@@ -1410,7 +1461,133 @@ session 可以將當前的 window 狀態保存起來，讓你下此使用此 lay
 
   自動寫入、自動讀取 session 設定 可使用此套件：[ autosess : Auto save/load sessions ](https://www.vim.org/scripts/script.php?script_id=3883)
 
-  @@@ 從這裡繼續整理
+# Keybinding
+
+[回到最上層](#Top-Content)
+
+_此章節主要是紀錄常見的好用設定_，若有看不懂的地方請再發 issue 討論
+
+- 綁定 Alt+j Alt+m 將目前行移動到下/上一行
+
+```text
+map <ESC>j <M-j>
+map <ESC>k <M-k>
+nn <M-j> :.m+1<CR>
+nn <M-k> :.m-2<CR>
+```
+
+# Vim Configuration
+
+[回到最上層](#Top-Content)
+
+_此章節主要是說明常見的設定_，若有看不懂的地方請再發 issue 討論
+
+## 如何得知目前的設定，與設定方式
+
+[回到最上層](#Top-Content)
+
+- 符號說明(類似設定文件可參考此篇[文章](https://vim.fandom.com/wiki/Searching))
+
+```text
+:se[t]        "會顯示所有經過修改的部份，就是和預設值不一樣的部份。
+:set all      "顯示目前所有設定值內容。
+set option    "表示設定該選項，有些設定需加 = 後加上設定值內容。
+set nooption  "在前方加個no，表示不設定該選項
+set option!   "在後方加!，表示toggle該選項
+set option?   "在後方加?，表示查詢該選項目前設定值
+set option&   "在後方加&，表示將該直恢復成vim預設值
+```
+
+set 後面是可以多重設定的。例如 `:set autoindent noconfirm autowrite`，這樣三種設定就會同時重設。
+
+## Setting
+
+[回到最上層](#Top-Content)
+
+- compatible 表示兼容 vi，nocompatible 表示不兼容 vi，建議 vim 使用 nocmpatible(nocp)，這樣才可以使用很多 vim 的功能。
+
+```text
+set nocompatible
+```
+
+- 搜尋
+
+```text
+set incsearch "is, 即時前往符合搜尋條件的字
+set ignorecase "ic, 忽略搜尋大小寫
+set smartcase "scs, 啟用智慧搜尋
+```
+
+- 檔案備份與還原
+  - vim 預設 backup 設定如下，其意思是會自動被放當前檔案，當未寫入檔案卻故障時可以進行還原選項。若選擇還原，原本的備份檔會消失。
+  - 若對備份相關有興趣可以參考 `:h backup` 以及 `:h backup-table`
+
+```text
+set nobackup writebackup
+```
+
+## 撰寫 vimrc 建議
+
+[回到最上層](#Top-Content)
+
+對於 vimrc 撰寫，[Jaime](https://www.barbarianmeetscoding.com/about/)作者給出小建議，認為你的 vimrc 應該要碎片化、分成小區塊。這樣才能比較好抓錯問題。
+
+[資料來源](https://www.barbarianmeetscoding.com/blog/exploring-vim-setting-up-your-vim-to-be-more-awesome-at-vim#keeping-your-vimrc-in-check) 與 [作者 vimrc](https://github.com/Vintharas/BarbaricNeoVim/blob/master/init.vim)
+
+# Misc 一些雜項
+
+[回到最上層](#Top-Content)
+
+## shortcuts
+
+[回到最上層](#Top-Content)
+
+**在此列出一些比較不常用的按鍵**
+
+### normal mode
+
+- `ZZ` 檔案如果有被修改，那麼就寫入檔案並離開。效果等同於 `:x`。
+- `ZQ` 強制離開並不檢查修改，等同於 `:q!`。
+
+※ 注意事項
+
+```text
+:x 與 :wq 不同 ，:wq 如果遇到read-only 或未命名檔案會出錯。
+:cq 與 :q! 稍微不同，可以看下面的原文說明。
+```
+
+```text
+:cq[uit][!] Quit Vim with an error code, so that the compiler will not compile the same file again.
+`:q[uit]! Quit without writing, also when the current buffer has changes.
+```
+
+## Vim password protext files.
+
+[回到最上層](#Top-Content)
+
+`:h 'cryptmethod' 'cm'`
+
+可以使用 `$vim -x {filename}`進行檔案加密，加密後記得要`:wq`去保存密碼。
+
+如果要取消密碼可以使用 `$vim -X {filename}`，輸入兩次空白密碼，也是要`:wq`保存
+
+## colorschemes 顏色主題配置
+
+[回到最上層](#Top-Content)
+
+vim 中有許多顏色主題配置可以選擇，選擇自己看順眼的即可。
+
+- 列出 vim highlight 色碼表
+  `:so $VIMRUNTIME/syntax/hitest.vim`
+
+此[作者](https://www.barbarianmeetscoding.com/about/)在[文章中](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip#get-yourself-a-nice-colorscheme)說明他使用的顏色配置是[這個](https://github.com/keitanakamura/neodark.vim)
+
+**其他可以參考的顏色配置**
+
+- 在 Vim Awesome 中搜尋 color scheme 之[頁面](https://vimawesome.com/?q=color+scheme)
+- [vim-colorschemes plugin](https://vimawesome.com/plugin/vim-colorschemes-sweeter-than-fiction)
+
+@@@ 從這裡繼續整理
 
 # 待分類
 
@@ -1500,6 +1677,12 @@ Use CTRL-G and CTRL-T to jump to the next or previous match respectively without
 [source](https://www.barbarianmeetscoding.com/wiki/vim/#substitute-replace-text-with-other-text)
 :[range]s[ubstitute]/{pattern}/{string}/[flags] [count]
 
+## defiend your own commands
+
+https://www.barbarianmeetscoding.com/blog/exploring-vim-setting-up-your-vim-to-be-more-awesome-at-vim#defining-your-own-commands <br>
+`command! RefreshConfig source $MYVIMRC`
+To find more information about custom commands take a look at :h user-commands (also :h 40.2 which has a getting started guide for user-defined commands).
+
 # 看不懂的
 
 [回到最上層](#Top-Content)
@@ -1522,83 +1705,6 @@ line breaking
 (https://stackoverflow.com/questions/1290285/why-cant-i-stop-vim-from-wrapping-my-code,
 https://stackoverflow.com/questions/2280030/how-to-stop-line-breaking-in-vim/2280059,
 https://thoughtbot.com/blog/wrap-existing-text-at-80-characters-in-vim)
-
-# Setting
-
-[回到最上層](#Top-Content)
-
-Setting the search to be case insensitive in Vim
-
-    :set ignorecase #equal set ic
-    :set noignorecase #equal sest noic
-    :set smartcase #待研究
-
-map <ESC>j <M-j>
-map <ESC>k <M-k>
-nn <M-j> :.m+1<CR>
-nn <M-k> :.m-2<CR>
-alt+j 移動到下行
-alt+k 移動到上行
-
-set compatible " enable option
-set nocompatible " prepend 'no' to disable the option
-set compatible! " append ! to toggle the option
-set compatible? " find out whether the option is enabled
-set compatible& " reset to default vim option
-
-`:h backup-table`
-backup off writebackup on:backup current file, deleted afterwards (default)
-// 列出 vim highlight 色碼表
-:so $VIMRUNTIME/syntax/hitest.vim
-
-可以讓你的 vimrc 碎片話，小區塊
-https://github.com/Vintharas/BarbaricNeoVim/blob/master/init.vim
-
-## defiend your own commands
-
-https://www.barbarianmeetscoding.com/blog/exploring-vim-setting-up-your-vim-to-be-more-awesome-at-vim#defining-your-own-commands <br>
-`command! RefreshConfig source $MYVIMRC`
-To find more information about custom commands take a look at :h user-commands (also :h 40.2 which has a getting started guide for user-defined commands).
-
-# shortcuts
-
-[回到最上層](#Top-Content)
-
-`ZZ` in normal mode saves the current file if modified and exits or closes the current window/tab (same as `:x` but not `:wq` which writes the file even if it hasn't been modified).
-To exit unconditionally without changing anything: `ZQ` (same as `:q!`).
-:cq = :q!
-
-# Vim password protext files.
-
-[回到最上層](#Top-Content)
-
-可以使用 $vim -x {filename}進行檔案加密，加密後記得要`:wq`去保存密碼
-如果要取消密碼可以使用 $vim -X {filename}，輸入兩次空白密碼，也是要`:wq`保存
-:h cm(cryptmethod)
-
-# Vim Configuration
-
-[回到最上層](#Top-Content)
-
-## 如何得知目前的設定
-
-[回到最上層](#Top-Content)
-
-:set 或 :se 會顯示所有經過修改的部份，就是和預設值不一樣的部份。
-:set all 顯示目前所有設定值內容。
-:set option? 顯示 option 這設定的目前值。
-:set option 直接線上設定，有些設定需加 = 後加上設定值內容。
-:set nooption 取消該設定。
-:set 後面是可以多重設定的。例如 :set autoindent noconfirm autowrite，這樣三種設定就會同時重設。
-
-# colorschemes
-
-[此作者在文章中說明他是用下面的顏色套件](https://www.barbarianmeetscoding.com/blog/exploring-vim-the-10-or-so-things-you-need-to-know-to-go-through-the-dip)
-https://github.com/keitanakamura/neodark.vim
-
-其他可以參考的顏色配置
-https://vimawesome.com/?q=color+scheme
-https://vimawesome.com/plugin/vim-colorschemes-sweeter-than-fiction
 
 # Vim 寫得不錯的網站 article website
 
