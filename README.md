@@ -29,6 +29,9 @@ The quick brown fox jumps over the lazy dog.
   - [Ex-command mode](#ex-command-mode)
 - [Visual-mode](#visual-mode)
   - [visual mode operator](#visual-mode-operator)
+- [Normal mode](#normal-mode)
+  - [多行編輯 edit multiple line](#多行編輯-edit-multiple-line)
+  - [其他雜項](#其他雜項)
 - [模式切換](#模式切換)
 - [移動](#移動)
   - [畫面移動](#畫面移動)
@@ -80,7 +83,7 @@ The quick brown fox jumps over the lazy dog.
   - [撰寫 vimrc 建議](#撰寫-vimrc-建議)
 - [Misc 一些雜項](#misc-一些雜項)
   - [shortcuts](#shortcuts)
-    - [normal mode](#normal-mode)
+    - [normal mode](#normal-mode-1)
   - [Vim password protext files.](#vim-password-protext-files)
   - [colorschemes 顏色主題配置](#colorschemes-顏色主題配置)
 - [待分類](#待分類)
@@ -263,6 +266,34 @@ The quick brown fox jumps over the lazy dog.
 - viw
 - v2e
 - 在 visual mode 下，可以使用`o` or `O` 去切換你的游標位置。
+
+# Normal mode
+
+[回到最上層](#Top-Content)
+
+`:h Normal Normal-mode command-mode`
+
+## 多行編輯 edit multiple line
+
+在插入模式(Insert-mode)與視覺模式(Visual-model)中，可以透過下列幾種按鍵組合回到普通模式(Normal-mode)
+<kbd>ESC</kbd>、<kbd>C-c</kbd>、<kbd>C-[</kbd>
+
+而透過 Normal-mode 的一些組合按鍵，可以達成多行編輯的方式：
+
+- 方法一：
+  <kbd>Shfit-V</kbd>之後，選擇你要的範圍，按下<kbd>:</kbd>，輸入`norm [I|A]{任何你想新增的字詞}`
+- 方法二：
+  <kbd>Ctrl-k</kbd>之後按下<kbd>v</kbd>，再選擇你要的範圍，按下<kbd>:</kbd>，輸入`norm [I|A]{任何你想新增的字詞}`
+- 方法三：
+  <kbd>Ctrl-V</kbd>之後，選擇你要的範圍，按下<kbd>I</kbd>或者<kbd>A</kbd>，就可以在你選擇的區域前面或者後面新增相同的字詞。
+
+## 其他雜項
+
+<kbd>CTRL-G</kbd> 列印出檔案訊息。
+
+<kbd>{count}CTRL-G</kbd> 列印出檔案訊息且是完整檔案位置，若 count>1 則還會列出 buffer number。
+
+<kbd>g CTRL-G</kbd> 列印目前游標位置的五種狀況：Column, Line, Word, Character and Byte。若 Character 與 Byte 相同，則會省略 Character。
 
 # 模式切換
 
@@ -1593,11 +1624,6 @@ vim 中有許多顏色主題配置可以選擇，選擇自己看順眼的即可�
 
 [回到最上層](#Top-Content)
 
-insert mode Ctrl + C equal <ESC>
-ctrl + k v multiple insert
-normal U 回覆該行所有操作
-normal p 貼上 vim 緩衝區上面的字串
-normal CTRL-g 顯示當前編輯文件中當前光標所在行位置以及文件狀態信息
 normal number G 移動到該行行頭
 search mode / (search down) ? (search up)
 normal % toggle to brackets
