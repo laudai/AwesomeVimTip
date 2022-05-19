@@ -181,8 +181,9 @@ The quick brown fox jumps over the lazy dog.
 
 [回到最上層](#Top-Content)
 
-- CTRL-T 增加縮排(indents)
-- CTRL-D 減少縮排(unindents)
+- CTRL-T 增加縮排(indent the current line)
+- CTRL-D 減少縮排(unindent the current line)
+- 0 CTRL-D 取消此行縮排(delete all indent in the current line)
 - CTRL-H 向前刪除一個字元
 - CTRL-W 向前刪除一個單字
 - CTRL-U 向前刪除所有單字
