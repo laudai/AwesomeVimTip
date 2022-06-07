@@ -113,6 +113,7 @@ The quick brown fox jumps over the lazy dog.
       - [Settings Sync](#settings-sync)
       - [TODO Highlight](#todo-highlight)
       - [Visual Studio IntelliCode](#visual-studio-intellicode)
+      - [multi-command](#multi-command)
   - [vscode vim Multi-Cursor Mode](#vscode-vim-multi-cursor-mode)
   - [vscode vim plugin](#vscode-vim-plugin)
 - [Vim Plugin](#vim-plugin)
@@ -1974,6 +1975,11 @@ Available Commands
 #### TODO Highlight
 
 #### Visual Studio IntelliCode
+
+#### multi-command
+
+[link](https://marketplace.visualstudio.com/items?itemName=ryuta46.multi-command)
+This extension can create command sequence as one command and bind a key, or call it manually.
 
 ## vscode vim Multi-Cursor Mode
 
