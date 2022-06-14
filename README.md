@@ -434,6 +434,8 @@ The quick brown fox jumps over the lazy dog.
 
 **\`** or **\'** 都可以作為 jumps to mark 的前導。兩者差異在於 **\`** 可以到原本指定的位置，而且是獨占的 exclusive( 不懂其意思 )； **\'** 則是跳到指定位置，但是是 **linewise**。
 
+- `:marks` List all the current marks.
+
 可以前往但不改變 jumplist，更多資訊可以看 `:h keepjumps`
 
 ```text
