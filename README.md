@@ -26,6 +26,7 @@ The quick brown fox jumps over the lazy dog.
 - [Command-line-mode](#command-line-mode)
   - [符號意思](#符號意思)
   - [進階 command](#進階-command)
+      - [範例說明](#範例說明)
   - [Ex-command mode](#ex-command-mode)
 - [Visual-mode](#visual-mode)
   - [visual mode operator](#visual-mode-operator)
@@ -49,6 +50,8 @@ The quick brown fox jumps over the lazy dog.
     - [特殊搜尋方式](#特殊搜尋方式)
   - [搜尋與取代之 ex command 範例](#搜尋與取代之-ex-command-範例)
     - [global flags](#global-flags)
+- [進階檔案編輯](#進階檔案編輯)
+  - [格式化與縮排](#格式化與縮排)
 - [Vim’s Registers](#vims-registers)
   - [Vim Registers 基礎觀念](#vim-registers-基礎觀念)
   - [Register 使用方式](#register-使用方式)
@@ -219,6 +222,9 @@ The quick brown fox jumps over the lazy dog.
 - `:read $VIMRUNTIME/vimrc_example.vim` 將 vimrc 範例檔讀取進來
 - `:w` 儲存該檔案或在後面加入新檔名另存新檔
 - `:sav` 另存新檔
+- `:!` 可與外部應用模式教互運作，如：
+  - `r ! ls -1 /home/user/Pictures`
+  - `:! wc %`
 
 ## 進階 command
 
@@ -232,6 +238,12 @@ The quick brown fox jumps over the lazy dog.
   `:[range]g[lobal]/{patern}/[cmd]`可以將範圍內符合條件的句子都執行 cmd 指令
 
   `:[range]g[lobal]!/{patern}/[cmd]` 可以將範圍內與符合條件相反的句子都執行 cmd 指令
+
+#### 範例說明
+
+[回到最上層](#Top-Content)
+
+- `:g/{patern}/[p]`: 將符合 patern 的行數列出來[資料來源](https://vi.stackexchange.com/questions/2280/how-to-show-only-matching-lines)
 
 ## Ex-command mode
 
@@ -258,6 +270,9 @@ The quick brown fox jumps over the lazy dog.
 > - `V` for visual mode line-wise. When you move around you go selecting line by line
 > - `<C-V>` for visual mode block-wise. When you move around yo go selecting rectangular blocks of text
 >   [source](https://www.barbarianmeetscoding.com/boost-your-coding-fu-with-vscode-and-vim/selecting-text/)
+
+- `{Visual}U` 選取處字體改成大寫
+- `{Visual}u` 選取處字體改成小寫
 
 ## visual mode operator
 
@@ -408,6 +423,8 @@ The quick brown fox jumps over the lazy dog.
 - `,` : 移動到上一個符合條件的字元
 - `[count]|` 移到對應的欄位
 - `[count]{motion}` , number + jhlkweb and so on.
+- `[count]g` + jk : not linewise 方式移動。（exclusive）
+- `[count]G` : 到第 N 行，預設到文件最下方。
 
   e.g. `5j`, `2w`, `3;`, `20gj`
 
@@ -425,6 +442,12 @@ The quick brown fox jumps over the lazy dog.
 - `gD` 移動到 global 定義的地方
 - `gf` 移動到目前游標下的檔案位置，可以使用 go to file 來記憶
 - `gF` 類似`gf`但是有檔名的限制
+- `gu{motion}` 使 motion 處改變成小寫字體體
+- `guu`, `gugu` 整行文字改成小寫字體
+- `gU{motion}` 使 motion 處改變成大寫字體體
+- `gUU`, `gUgU` 整行文字改成大小寫字體
+- `gq{motion}` 對文字進行格式化調整（如每行 80 字等等）
+  - example:[ Format only long lines ](https://vim.fandom.com/wiki/Format_only_long_lines)
 
 ### Marks (mark-motions)
 
@@ -466,7 +489,7 @@ jump command 是可以讓你快速的在文件中移動的方式。
 - `gg` 移到整份文件的最上方
 - `G` 移到整份文件的最下方
 - `10G` 移動到第 10 行，跳轉後會將 _**最後離開**_ 的行數加入 jumplist 內 // 10gg == 10G
-- `%` 在括號內移動 ( 詳情可參考`:h %` or `:h matchpairs` )
+- `%` 在括號(brackets)內移動 ( 詳情可參考`:h %` or `:h matchpairs` )
 - `(` `)` 把游標移動到上一個、下一個句子(sentence)
 - `{` `}` 把游標移動到上一個、下一個段落(paragraph)
 - `[[` 把游標移到上一個第一欄為 **{** 開頭的句子，若無則移動到文件首行
@@ -741,6 +764,14 @@ Substituting Text
 
 - `i` 忽略大小寫
 - `c` 每次取代前會做詢問
+
+# 進階檔案編輯
+
+[回到最上層](#Top-Content)
+
+## 格式化與縮排
+
+[回到最上層](#Top-Content)
 
 # Vim’s Registers
 
@@ -1628,19 +1659,9 @@ vim 中有許多顏色主題配置可以選擇，選擇自己看順眼的即可�
 
 [回到最上層](#Top-Content)
 
-normal number G 移動到該行行頭
-search mode / (search down) ? (search up)
-normal % toggle to brackets
-normal Q go to ex mode.
-gu - change to lowercase
-gU - change to uppercase
-guw - change word to lowercase
-guu - change line to lowercase
-gq - text formatting
-! - filter through an external program
-
-> G - Increase indendation till the end of the file
-> = - fix indentation
+- = format your code 格式化字串
+- == Filter [count] lines like with ={motion}.
+- {Visual}= Filter the highlighted lines like with ={motion}.
 
 Reformat the entire file: `ggvGgq`
 
@@ -1808,6 +1829,8 @@ $ vim -u NONE fileyouwantopen
 
 - https://en.wikibooks.org/wiki/Learning_the_vi_Editor/Vim/Modes
   https://github.com/VSCodeVim/Vim/blob/master/ROADMAP.md
+
+- https://wsdjeg.spacevim.org/vim-global-substitute/
 
 https://github.com/VSCodeVim/Vim#-emulated-plugins
 
