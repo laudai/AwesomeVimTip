@@ -407,6 +407,7 @@ The quick brown fox jumps over the lazy dog.
 - `^` : 移動到此行第一個非空白字元。
 - `$` : 移動到此行最後一個字元。
 - `g_` : 移動到此行最後一個非空白字元。
+- `[count]_` : 移動到 count - 1 行第一個非空白字元。
 - `w` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**開頭**_ 。
 - `b` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**上一個**_ 字的 _**開頭**_ 。
 - `e` : 以英文字與數字為同類，以外的被視為斷字。移動到 _**下一個**_ 字的 _**結尾**_ 。
@@ -545,6 +546,8 @@ CTRL-I Go to [count] newer cursor position in jump list (not a motion command).
 - `:[range]m[ove] {address}` 把該行或者選取範圍內，向上/下移動幾行(透過`+`, `-`)
 - `:u[ndo] {N}` undo command-line
 - `:red[o]` redo command-line
+- `:e[dit]` 編輯目前檔案，當外部程式修改目前檔案後，可以透過此方式重新載入檔案
+- `e[dit]!` 摒棄目前此檔案(buffer)的修改，使目前檔案恢復至最後的儲存狀態
 
 e.g.
 
@@ -1658,6 +1661,12 @@ vim 中有許多顏色主題配置可以選擇，選擇自己看順眼的即可�
 # 待分類
 
 [回到最上層](#Top-Content)
+
+:h complete_info_mode
+各種補齊模式
+可參考鳥哥
+https://linux.vbird.org/linux_basic/centos7/0310vi.php
+vim 的挑字補全功能
 
 - = format your code 格式化字串
 - == Filter [count] lines like with ={motion}.
