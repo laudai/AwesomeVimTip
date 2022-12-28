@@ -136,7 +136,7 @@ The quick brown fox jumps over the lazy dog.
   - [gundo](#gundo)
   - [linediff](#linediff)
   - [python-mode](#python-mode)
-  - [rainbow_parenthesis](#rainbow_parenthesis)
+  - [rainbow\_parenthesis](#rainbow_parenthesis)
   - [slimv](#slimv)
   - [snipmate](#snipmate)
   - [sparkup](#sparkup)
@@ -856,6 +856,16 @@ e.g.
 **範例 2. 在 insert mode 中，貼上暫存器的內容**
 
 `<C-R> {register}` 在 insert mode 下可以將對應暫存器的內容貼上。
+`<C-R><C-R> {register}` 或 `<C-R><C-O> {register}` 亦可在 insert mode 下可以將對應暫存器的內容貼上。
+
+官方說明兩者差異說明如下：
+
+1. 假設 register a 內容如下 "xy^Hz" (^H 表示刪除鍵)
+2. `<C-R> a` 會插入 "xz"
+3. `<C-R><C-R> a` 會插入 "xy^Hz"
+
+`:help c_CTRL-R_CTRL-R`
+`:help i_CTRL-R`
 
 # Vim’clipboard
 
